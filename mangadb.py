@@ -9,7 +9,6 @@ from bson.binary import Binary
 import pickle
 
 db = MongoClient('localhost', 27017).manga_scrape
-# db.add_son_manipulator(TransformToBinary())
 gridFs = gridfs.GridFS(db)
 
 def persist(object):
@@ -28,6 +27,8 @@ def persist(object):
 		for (key, value) in object.__dict__.items():
 			if key != '_id':
 				record[key] = value
+	else:
+		record = object.__dict__
 		
 	return collection.save(record, manipulate=True)
 		
