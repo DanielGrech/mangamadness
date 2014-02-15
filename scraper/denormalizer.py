@@ -9,7 +9,7 @@ from datetime import datetime
 import calendar
 
 def main():
-	series_cursor = db.series.find()
+	series_cursor = db.series.find().batch_size(20)
 	pc.logger.info("Got %s series", series_cursor.count())
 	counter = 1
 	for series_record in series_cursor:
@@ -23,7 +23,7 @@ def main():
 		series['year_of_release'] = series_record.get('year_of_release')
 		series['original_cover_image_url'] = series_record.get('cover_image_url')
 
-		chapters_cursor = db.chapters.find({'series_id' : series['_id']})
+		chapters_cursor = db.chapters.find({'series_id' : series['_id']}).batch_size(20)
 		if chapters_cursor is not None:
 			chapters = []
 			for chapter_record in chapters_cursor:
@@ -37,7 +37,7 @@ def main():
 					dt = datetime.strptime(date_added_str, '%m/%d/%Y')
 					chapter['release_date'] = calendar.timegm(dt.utctimetuple())
 
-				pages_cursor = db.pages.find({'chapter_id' : chapter['_id']})
+				pages_cursor = db.pages.find({'chapter_id' : chapter['_id']}).batch_size(50)
 				if pages_cursor is not None:
 					pages = []
 					for page_record in pages_cursor:
