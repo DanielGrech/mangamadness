@@ -4,7 +4,6 @@ import (
 	"github.com/codegangsta/martini"
 	"github.com/martini-contrib/render"
   "labix.org/v2/mgo"
-  // "labix.org/v2/mgo/bson"
   "mangamaster/api"
 	"net/http"
 )
@@ -25,7 +24,7 @@ func main() {
   m.Map(session.DB("manga_scrape"))
   m.Use(render.Renderer())
   m.Get("/api/series", api.GetSeriesList)
-  m.Get("/api/series/search/:query", api.GetSeriesList)
+  m.Get("/api/series/search/:query", api.SearchSeries)
   m.Get("/api/series/:id", api.GetSeries)
   m.Get("/api/series/:id/chapters", api.GetChapterList)
   m.Get("/api/chapters/:chapter_id", api.GetChapter)

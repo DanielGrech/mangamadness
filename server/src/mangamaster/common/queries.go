@@ -4,7 +4,41 @@ import (
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
 	"time"
+	"strings"
+	"regexp"
 )
+
+var charactersRegex = regexp.MustCompile(`[A-Za-z0-9]`)
+
+func stripchars(str, chr string) string {
+    return strings.Map(func(r rune) rune {
+        if strings.IndexRune(chr, r) < 0 {
+            return r
+        }
+        return -1
+    }, str)
+}
+
+func SearchSeries(db *mgo.Database, query string, limit int, update_since int) (series []Series) {
+	query = stripchars(query, "*/")
+	if charactersRegex.MatchString(query) {
+		c := db.C("series")
+		ts := bson.NewObjectIdWithTime(time.Unix(int64(update_since), 0))
+		q := bson.M{
+			"_id" : bson.M{
+				"$gt" : ts,
+			},
+			"name" : bson.M {
+				"$regex" : ".*" + query + ".*",
+				"$options" : "-i",
+			},
+		}
+
+		c.Find(q).Limit(limit).Sort("name").All(&series)
+	}
+
+	return
+}
 
 func GetSeriesList(db *mgo.Database, offset int, limit int, update_since int) (series []Series) {
 	c := db.C("series")

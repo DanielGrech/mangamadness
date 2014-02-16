@@ -34,6 +34,15 @@ func extract(values url.Values) (limit int, offset int, updatedSince int) {
 	return
 }
 
+func SearchSeries(request *http.Request, render render.Render, params martini.Params, db *mgo.Database) {
+	limit, _, updated_since := extract(request.URL.Query())
+	query := params["query"]
+	result := common.SearchSeries(db, query, limit, updated_since)
+	render.JSON(http.StatusOK,  map[string]interface{} {
+		"result" : result,
+	})
+}
+
 func GetSeriesList(request *http.Request, render render.Render, db *mgo.Database) {
 	limit, offset, updated_since := extract(request.URL.Query())
 
