@@ -25,8 +25,9 @@ func main() {
   m.Map(session.DB("manga_scrape"))
   m.Use(render.Renderer())
   m.Get("/api/series", api.GetSeriesList)
+  m.Get("/api/series/search/:query", api.GetSeriesList)
   m.Get("/api/series/:id", api.GetSeries)
-  m.Get("/api/chapters", api.GetChapterList)
+  m.Get("/api/series/:id/chapters", api.GetChapterList)
   m.Get("/api/chapters/:chapter_id", api.GetChapter)
   m.NotFound(notFound)
 
