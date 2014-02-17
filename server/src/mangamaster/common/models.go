@@ -15,6 +15,7 @@ type Chapter struct {
 	Id bson.ObjectId "_id"
 	Series_Id bson.ObjectId `json:"series_id"` 	
 	Name string `json:"name"`
+	Sequence_number int `json:"sequence_number"`
 	Date_added string `json:"date_added"`
 }
 
