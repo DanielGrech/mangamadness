@@ -16,8 +16,9 @@ class Producer:
 		self.beanstalk.use('image_download')
 
 	def produce(self):
-		cursor = db.pages.find()
+		cursor = db.pages.find( { "image" : {"$exists" : False} } ).sort([("chapter_id", 1)])
 		pc.logger.info("Got %s pages", cursor.count())
+		counter = 0
 		for pageRecord in cursor:
 			page = MangaPage(pageRecord['name'], pageRecord['url'])
 			page._id = pageRecord['_id']
@@ -26,6 +27,9 @@ class Producer:
 			page.image_url = pageRecord['image_url']
 
 			self.beanstalk.put(pickle.dumps(page), 50)
+			counter = counter + 1
+			if counter > 2000:
+				break;
 
 	def close(self):
 		self.beanstalk.close()

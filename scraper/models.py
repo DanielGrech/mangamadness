@@ -57,6 +57,7 @@ class MangaPage():
 		self.url = url
 		self.image_url = None
 		self.image_id = None
+		self.image = None
 
 
 	def __str__(self):
