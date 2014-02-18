@@ -11,7 +11,7 @@ import (
 )
 
 const defaultLimit = 30
-const maxLimit = 100
+const maxLimit = 500
 
 func extract(values url.Values) (limit int, offset int, updatedSince int) {
 	offset, _ = strconv.Atoi(values.Get("offset"))
@@ -53,22 +53,38 @@ func GetSeriesList(request *http.Request, render render.Render, db *mgo.Database
 } 
 
 func GetSeries(request *http.Request, render render.Render, params martini.Params, db *mgo.Database) {
-	series_id := params["id"]
+	series_name := params["series_name"]
 
-	result := common.GetSeries(db, series_id)
+	result := common.GetSeries(db, series_name)
 	render.JSON(http.StatusOK,  map[string]interface{} {
 		"result" : result,
 	})
 } 
 
 func GetChapterList(request *http.Request, render render.Render, params martini.Params, db *mgo.Database) {
-	series_id := params["id"]
+	series_name := params["series_name"]
 	limit, offset, updated_since := extract(request.URL.Query())
-	result := common.GetChapterList(db, series_id, offset, limit, updated_since)
+	result := common.GetChapterList(db, series_name, offset, limit, updated_since)
 	render.JSON(http.StatusOK,  map[string]interface{}{
 		"result": result,
 	})
 } 
+
+func GetChapterFromSeries(render render.Render, params martini.Params, db *mgo.Database) {
+	series_name := params["series_name"]
+	chapter_num_str := params["chapter_number"]	
+	chapter_num, error := strconv.Atoi(chapter_num_str)
+	if error != nil {
+		render.JSON(http.StatusNotFound, map[string]interface{} {
+			"error" : "No chapter '" + chapter_num_str + "'",
+		})
+	} else {
+		result := common.GetChapterFromSeries(db, series_name, chapter_num)
+		render.JSON(http.StatusOK,  map[string]interface{}{
+			"result": result,
+		})
+	}
+}
 
 func GetChapter(params martini.Params, render render.Render, db *mgo.Database) {
 	chapter_id := params["chapter_id"]

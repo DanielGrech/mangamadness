@@ -22,6 +22,7 @@ type Chapter struct {
 type Series struct {
 	Id bson.ObjectId `bson:"_id", json:"id"`
 	Name string `json:"name"` 
+	Url_segment string `json:"url_segment"`
 	Author string `json:"author"` 
 	Artist string `json:"artist"` 
 	Genres []string `json:"genres"` 
