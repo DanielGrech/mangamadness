@@ -37,6 +37,7 @@ class MangaChapter():
 		self.series_id=None
 		self.name = name
 		self.url = url
+		sequence_number = -1
 		self.date_added = date_added
 
 	def date_added_epoch(self):
@@ -52,7 +53,8 @@ class MangaChapter():
 class MangaPage():
 	def __init__(self, name, url):
 		self._id = None
-		self.chapter_id=None
+		self.chapter_id = None
+		self.series_id = None
 		self.name = name
 		self.url = url
 		self.image_url = None
