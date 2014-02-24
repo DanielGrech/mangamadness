@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MangaMasterDebug</string>
+    <string name="content_provider_authority">com.dgsd.android.mangamaster.debug</string>
+</resources>

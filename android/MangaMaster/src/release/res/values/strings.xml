@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MangaMasterRelease</string>
+    <string name="content_provider_authority">com.dgsd.android.mangamaster.release</string>
+</resources>
