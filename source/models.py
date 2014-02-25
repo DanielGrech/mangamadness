@@ -11,10 +11,12 @@ class MangaSeries():
 		self.name = name
 		self.url = url
 		self.cover_image_url = None
+		self.cover_image = None
 		self.summary = None
 		self.author = None
 		self.artist = None
 		self.year_of_release = None
+		self.url_segment = None
 		self.genres = []
 
 	def __str__(self):
@@ -37,6 +39,7 @@ class MangaChapter():
 		self.series_id=None
 		self.name = name
 		self.url = url
+		self.title = None
 		sequence_number = -1
 		self.date_added = date_added
 

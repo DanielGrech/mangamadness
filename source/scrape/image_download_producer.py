@@ -17,7 +17,7 @@ class Producer:
 		self.beanstalk.use('image_download')
 
 	def produce(self):
-		cursor = db.pages.find( { "series_id" : ObjectId("52fa208161d93f8f88b0ab68") , "image" : {"$exists" : False} } ).sort([("chapter_id", 1)])
+		cursor = db.pages.find()
 		pc.logger.info("Got %s pages", cursor.count())
 		for pageRecord in cursor:
 			page = MangaPage(pageRecord['name'], pageRecord['url'])

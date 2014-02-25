@@ -70,14 +70,22 @@ class MangaPandaChapterScraper:
 				if isinstance(item, Tag):
 					tr = item.select('td')
 					if len(tr) == 2:
-						link_elem = tr[0].select('a')[0]
+						first_td = tr[0]
+						link_elem = first_td.select('a')[0]
 						date_elem = tr[1]
 
 						name = link_elem.text.strip()
 						url = link_elem.get('href').strip()
 						date = date_elem.text.strip()
+						title = first_td.text.strip()
+						if title is not None and title.startswith(name):
+							title = title[len(name):]
+							if title.startswith(' : '):
+								title = title[len(' : '):]
 
-						chapters.append(MangaChapter(name, url, date))
+						chapter = MangaChapter(name, url, date)
+						chapter.title = title
+						chapters.append(chapter)
 
 		return chapters
 
