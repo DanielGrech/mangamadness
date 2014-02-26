@@ -9,7 +9,7 @@ import logging
 import ConfigParser
 import pickle
 from models import *
-import mangadb as db
+from mangadb import db
 
 class Consumer:
 	def __init__(self, host, port):
@@ -39,16 +39,17 @@ class Consumer:
 					else:
 						pc.logger.info("Got %s chapters", len(chapters))
 						for chapter in chapters:
+							if chapter.title == " : " or chapter.title == "  : " or chapter.title == " :  " or chapter.title == ": " or chapter.title == " :":
+								chapter.title = ""
 							pc.logger.info("Got %s %s", chapter.title, chapter.url)
-							db.pages.update( {"url" : chapter.url } , { "$set" : {"title" : chapter.title} } , multi=True)
+							db.chapters.update( {"url" : chapter.url } , { "$set" : {"title" : chapter.title} } , multi=True)
 
-					# job.delete()
+					job.delete()
 			except Exception as e:
 				pc.logger.error("Error: %s", e)
 
 	def close(self):
 		self.series_beanstalk.close()
-		self.chapter_beanstalk.close()
 
 def main():
 	host, port = pc.get_beanstalk_server()

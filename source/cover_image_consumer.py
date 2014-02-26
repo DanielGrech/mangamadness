@@ -56,7 +56,6 @@ class Consumer:
 					else:
 						series.cover_image = self.add_image(series.name, series.cover_image_url)
 						db.persist(series)
-
 						pc.logger.info("%s = %s", series.name, series.cover_image)
 
 					job.delete()
@@ -67,7 +66,7 @@ class Consumer:
 		self.beanstalk.close()
 
 def main():
-	access_key, secret_key = pc.get_aws_config()
+	access_key, secret_key, ignored = pc.get_aws_config()
 	conn = S3Connection(access_key, secret_key)
 	bucket = conn.create_bucket("mangamadness_cover_images")
 
