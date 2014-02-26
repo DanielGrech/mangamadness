@@ -1,14 +1,13 @@
 #!/usr/bin/python
 
-import ProducerConsumer as pc
+import common
 import beanstalkc
 from bs4 import BeautifulSoup as parser
 from mangapanda import MangaPandaPageScraper
 import requests
 import logging
-import ConfigParser
 import pickle
-import mangadb as db
+import mangadb
 from models import *
 
 class Consumer:
@@ -27,22 +26,22 @@ class Consumer:
 			try:
 				job = self.chapter_beanstalk.reserve(timeout=300)
 				if job is None:
-					pc.logger.debug("Consumer timed out. Exiting")
+					common.logger.debug("Consumer timed out. Exiting")
 					break
 				else:
 					chapter = pickle.loads(job.body)
-					chapter._id = db.persist(chapter)
-					pc.logger.info("[ChapterConsumer] - %s]", chapter.name)
+					chapter._id = mangadb.persist(chapter, mangadb.sourceDb)
+					common.logger.info("[ChapterConsumer] - %s]", chapter.name)
 
-					page_contents = requests.get(pc.base_url + chapter.url).text
+					page_contents = requests.get(common.base_url + chapter.url).text
 					psr = parser(page_contents)
 
 					pages = self.page_scraper.get_pages_url(psr)
 
 					if pages is None:
-						pc.logger.debug("No pages found for %s", chapter.name)
+						common.logger.debug("No pages found for %s", chapter.name)
 					else:
-						pc.logger.info("Got %s pages for %s", len(pages), chapter.name)
+						common.logger.info("Got %s pages for %s", len(pages), chapter.name)
 						for page in pages:
 							page.chapter_id = chapter._id
 							page.series_id = chapter.series_id
@@ -50,7 +49,7 @@ class Consumer:
 
 					job.delete()
 			except Exception as e:
-				pc.logger.error("Error: %s", e)
+				common.logger.error("Error: %s", e)
 
 	def close(self):
 		self.chapter_beanstalk.close()
@@ -58,7 +57,7 @@ class Consumer:
 
 
 def main():
-	host, port = pc.get_beanstalk_server()
+	host, port = common.get_beanstalk_server()
 	consumer = Consumer(host, port)
 	consumer.consume()
 	consumer.close()

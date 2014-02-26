@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import ProducerConsumer as pc
+import common
 import beanstalkc
 from bs4 import BeautifulSoup as parser
 from mangapanda import MangaPandaPageScraper
@@ -8,7 +8,7 @@ import requests
 import logging
 import ConfigParser
 import pickle
-import mangadb as db
+import mangadb
 from models import *
 
 class Consumer:
@@ -26,26 +26,26 @@ class Consumer:
 			try:
 				job = self.page_beanstalk.reserve(timeout=300)
 				if job is None:
-					pc.logger.debug("Consumer timed out. Exiting")
+					common.logger.debug("Consumer timed out. Exiting")
 					break
 				else:
 					page = pickle.loads(job.body)
-					page._id = db.persist(page)
-					pc.logger.info("[PageConsumer] - %s]", page.name)
+					page._id = mangadb.persist(page, mangadb.sourceDb)
+					common.logger.info("[PageConsumer] - %s]", page.name)
 
-					single_page_contents = requests.get(pc.base_url + page.url).text
+					single_page_contents = requests.get(common.base_url + page.url).text
 					psr = parser(single_page_contents)
 
 					page.image_url = self.page_scraper.get_image_url(psr)
 
-					pc.logger.debug("Got image url for %s", page.name)
-					db.persist(page)
+					common.logger.debug("Got image url for %s", page.name)
+					mangadb.persist(page, mangadb.sourceDb)
 
 					self.image_download_beanstalk.put(pickle.dumps(page), priority=30)
 					
 					job.delete()
 			except Exception as e:
-				pc.logger.error("Error: %s", e)
+				common.logger.error("Error: %s", e)
 
 	def close(self):
 		self.page_beanstalk.close()
@@ -53,7 +53,7 @@ class Consumer:
 
 
 def main():
-	host, port = pc.get_beanstalk_server()
+	host, port = common.get_beanstalk_server()
 	consumer = Consumer(host, port)
 	consumer.consume()
 	consumer.close()

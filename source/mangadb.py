@@ -4,21 +4,20 @@ from models import MangaChapter
 from models import MangaPage
 from pymongo import MongoClient
 from pymongo.son_manipulator import SONManipulator
-import gridfs
 from bson.binary import Binary
 import pickle
 
-db = MongoClient('localhost', 27017).manga_scrape
-gridFs = gridfs.GridFS(db)
+sourceDb = MongoClient('localhost', 27017).manga_scrape
+prodDb = MongoClient('localhost', 27017).production
 
-def persist(object):
+def persist(object, theDb):
 	collection = None
 	if isinstance(object, MangaSeries):
-		collection = db.series
+		collection = theDb.series
 	elif isinstance(object, MangaChapter):
-		collection = db.chapters
+		collection = theDb.chapters
 	elif isinstance(object, MangaPage):
-		collection = db.pages
+		collection = theDb.pages
 	else:
 		raise Exception('Unrecognised object: ' + object)
 
@@ -31,7 +30,3 @@ def persist(object):
 		record = object.__dict__
 		
 	return collection.save(record, manipulate=True)
-		
-
-def persist_raw(data, filename, mimetype):
-	return gridFs.put(data, contentType=mimetype, filename=filename)

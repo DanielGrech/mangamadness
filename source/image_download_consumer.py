@@ -4,10 +4,9 @@ import beanstalkc
 import sys
 import requests
 import os
-import mangadb as db
+import mangadb
 import logging
-import ProducerConsumer as pc
-import mimetypes
+import common
 import pickle
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
@@ -47,32 +46,32 @@ class Consumer:
 			try:
 				job = self.beanstalk.reserve(timeout=300)
 				if job is None:
-					pc.logger.debug("Consumer timed out. Exiting")
+					common.logger.debug("Consumer timed out. Exiting")
 					break
 				else:
 					page = pickle.loads(job.body)
 					if page.image_url is None:
-						pc.logger.error("Dont have image_url for %s - %s. Ignoring", page.name, page.url)
+						common.logger.error("Dont have image_url for %s - %s. Ignoring", page.name, page.url)
 					else:
 						keyname = str(page.chapter_id) + '/' + str(page._id)
 						page.image = self.add_image(keyname, page.image_url)
-						db.persist(page)
+						mangadb.persist(page, mangadb.sourceDb)
 
-						pc.logger.info("%s = %s", page.name, page.image)
+						common.logger.info("%s = %s", page.name, page.image)
 
 					job.delete()
 			except Exception as e:
-				pc.logger.error("Error: %s", e)
+				common.logger.error("Error: %s", e)
 
 	def close(self):
 		self.beanstalk.close()
 
 def main():
-	access_key, secret_key, bucket = pc.get_aws_config()
+	access_key, secret_key, bucket = common.get_aws_config()
 	conn = S3Connection(access_key, secret_key)
 	bucket = conn.create_bucket(bucket)
 
-	host, port = pc.get_beanstalk_server()
+	host, port = common.get_beanstalk_server()
 	consumer = Consumer(host, port, bucket)
 	consumer.consume()
 	consumer.close()

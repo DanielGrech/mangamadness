@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-import ProducerConsumer as pc
+import common
 import beanstalkc
-from mangadb import db
+import mangadb
 import logging
 import pickle
 
@@ -13,11 +13,11 @@ class Producer:
 		self.beanstalk.use('series_updates')
 
 	def produce(self):
-		series_cursor = db.series.find()
+		series_cursor = mangadb.sourceDb.series.find()
 		if series_cursor is None:
-			pc.logger.info("Didnt receive any series")
+			common.logger.info("Didnt receive any series")
 		else:
-			pc.logger.info("Got %s series", series_cursor.count())
+			common.logger.info("Got %s series", series_cursor.count())
 			for series_record in series_cursor:
 				self.beanstalk.put(pickle.dumps(series_record), priority=10)
 
@@ -25,7 +25,7 @@ class Producer:
 		self.beanstalk.close()
 
 def main():
-	host, port = pc.get_beanstalk_server()
+	host, port = common.get_beanstalk_server()
 	producer = Producer(host, port)
 	producer.produce()
 	producer.close()
