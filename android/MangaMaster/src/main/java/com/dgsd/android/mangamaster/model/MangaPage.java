@@ -24,7 +24,55 @@ public class MangaPage extends BaseModel {
 
     @SerializedName("time_created")
     long mTimeCreated;
-    
+
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
+    }
+
+    public String getPageId() {
+        return mPageId;
+    }
+
+    public void setPageId(final String pageId) {
+        mPageId = pageId;
+    }
+
+    public String getChapterId() {
+        return mChapterId;
+    }
+
+    public void setChapterId(final String chapterId) {
+        mChapterId = chapterId;
+    }
+
+    public String getImageUrl() {
+        return mImageUrl;
+    }
+
+    public void setImageUrl(final String imageUrl) {
+        mImageUrl = imageUrl;
+    }
+
+    public int getName() {
+        return mName;
+    }
+
+    public void setName(final int name) {
+        mName = name;
+    }
+
+    public long getTimeCreated() {
+        return mTimeCreated;
+    }
+
+    public void setTimeCreated(final long timeCreated) {
+        mTimeCreated = timeCreated;
+    }
+
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeLong(mId);

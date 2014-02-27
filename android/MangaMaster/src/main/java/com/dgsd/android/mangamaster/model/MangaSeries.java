@@ -40,6 +40,94 @@ public class MangaSeries extends BaseModel {
     @SerializedName("time_created")
     long mTimeCreated;
 
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
+    }
+
+    public String getSeriesId() {
+        return mSeriesId;
+    }
+
+    public void setSeriesId(final String seriesId) {
+        mSeriesId = seriesId;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(final String name) {
+        mName = name;
+    }
+
+    public String getAuthor() {
+        return mAuthor;
+    }
+
+    public void setAuthor(final String author) {
+        mAuthor = author;
+    }
+
+    public String getArtist() {
+        return mArtist;
+    }
+
+    public void setArtist(final String artist) {
+        mArtist = artist;
+    }
+
+    public String getSummary() {
+        return mSummary;
+    }
+
+    public void setSummary(final String summary) {
+        mSummary = summary;
+    }
+
+    public String getUrlSegment() {
+        return mUrlSegment;
+    }
+
+    public void setUrlSegment(final String urlSegment) {
+        mUrlSegment = urlSegment;
+    }
+
+    public String getCoverImageUrl() {
+        return mCoverImageUrl;
+    }
+
+    public void setCoverImageUrl(final String coverImageUrl) {
+        mCoverImageUrl = coverImageUrl;
+    }
+
+    public int getYearOfRelease() {
+        return mYearOfRelease;
+    }
+
+    public void setYearOfRelease(final int yearOfRelease) {
+        mYearOfRelease = yearOfRelease;
+    }
+
+    public List<String> getGenres() {
+        return mGenres;
+    }
+
+    public void setGenres(final List<String> genres) {
+        mGenres = genres;
+    }
+
+    public long getTimeCreated() {
+        return mTimeCreated;
+    }
+
+    public void setTimeCreated(final long timeCreated) {
+        mTimeCreated = timeCreated;
+    }
+
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeLong(mId);
