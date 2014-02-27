@@ -45,7 +45,7 @@ func getPagesInChapter(db *mgo.Database, chapter_id bson.ObjectId) (pages []Page
 	return
 }
 
-func SearchSeries(db *mgo.Database, query string, limit int, update_since int) (series []Series) {
+func SearchSeries(db *mgo.Database, query string, offset int, limit int, update_since int) (series []Series) {
 	query = stripchars(query, "*/")
 	if charactersRegex.MatchString(query) {
 		c := db.C("series")
@@ -59,7 +59,7 @@ func SearchSeries(db *mgo.Database, query string, limit int, update_since int) (
 			},
 		}
 
-		c.Find(q).Limit(limit).Sort("url_segment").All(&series)
+		c.Find(q).Limit(limit).Skip(offset).Sort("url_segment").All(&series)
 	}
 
 	return

@@ -39,72 +39,112 @@ func extract(values url.Values) (limit int, offset int, updatedSince int) {
 }
 
 func SearchSeries(request *http.Request, render render.Render, params martini.Params, db *mgo.Database) {
-	limit, _, updated_since := extract(request.URL.Query())
+	limit, offset, updated_since := extract(request.URL.Query())
 	query := params["query"]
-	result := common.SearchSeries(db, query, limit, updated_since)
+	result := common.SearchSeries(db, query, offset, limit, updated_since)
+
+	response := map[string]interface{}{
+		"limit" : limit,
+		"offset" : offset,
+		"updated_since" : updated_since,
+		"query" : query,
+	} 
+
 	if result == nil {
-		render.JSON(http.StatusOK, EMPTY_JSON_ARRAY)
+		response["result"] = EMPTY_JSON_ARRAY
 	} else {
-		render.JSON(http.StatusOK, result)
+		response["result"] = result
 	}
+
+	render.JSON(http.StatusOK, response)
 }
 
 func GetSeriesList(request *http.Request, render render.Render, db *mgo.Database) {
 	limit, offset, updated_since := extract(request.URL.Query())
 
 	result := common.GetSeriesList(db, offset, limit, updated_since)
+
+	response := map[string]interface{}{
+		"limit" : limit,
+		"offset" : offset,
+		"updated_since" : updated_since,
+	} 
+
 	if result == nil {
-		render.JSON(http.StatusOK, EMPTY_JSON_ARRAY)
+		response["result"] = EMPTY_JSON_ARRAY
 	} else {
-		render.JSON(http.StatusOK, result)
+		response["result"] = result
 	}
+
+	render.JSON(http.StatusOK, response)
 } 
 
 func GetSeries(request *http.Request, render render.Render, params martini.Params, db *mgo.Database) {
 	series_name := params["series_name"]
 
 	result := common.GetSeries(db, series_name)
+
+	response := map[string]interface{}{}
 	if result == nil {
-		render.JSON(http.StatusOK, EMPTY_JSON_OBJECT)
+		response["result"] = EMPTY_JSON_OBJECT
 	} else {
-		render.JSON(http.StatusOK, result)
+		response["result"] = result
 	}
+
+	render.JSON(http.StatusOK, response)
 } 
 
 func GetChapterList(request *http.Request, render render.Render, params martini.Params, db *mgo.Database) {
 	series_name := params["series_name"]
 	limit, offset, updated_since := extract(request.URL.Query())
 	result := common.GetChapterList(db, series_name, offset, limit, updated_since)
+
+	response := map[string]interface{}{
+		"limit" : limit,
+		"offset" : offset,
+		"updated_since" : updated_since,
+	} 
+
 	if result == nil {
-		render.JSON(http.StatusOK, EMPTY_JSON_ARRAY)
+		response["result"] = EMPTY_JSON_ARRAY
 	} else {
-		render.JSON(http.StatusOK, result)
+		response["result"] = result
 	}
+
+	render.JSON(http.StatusOK, response)
 } 
 
 func GetChapterFromSeries(render render.Render, params martini.Params, db *mgo.Database) {
 	series_name := params["series_name"]
 	chapter_num_str := params["chapter_number"]	
 	chapter_num, error := strconv.Atoi(chapter_num_str)
+
+	response := map[string]interface{}{}
 	if error != nil {
-		render.JSON(http.StatusOK, EMPTY_JSON_ARRAY)
+		response["result"] = EMPTY_JSON_ARRAY	
 	} else {
 		result := common.GetChapterFromSeries(db, series_name, chapter_num)
 		if result == nil {
-			render.JSON(http.StatusOK, EMPTY_JSON_ARRAY)
+			response["result"] = EMPTY_JSON_ARRAY
 		} else {
-			render.JSON(http.StatusOK, result)
+			response["result"] = result
 		}
 	}
+
+	render.JSON(http.StatusOK, response)
 }
 
 func GetChapter(params martini.Params, render render.Render, db *mgo.Database) {
 	chapter_id := params["chapter_id"]
 
 	result := common.GetPagesInChapter(db, chapter_id)
+	response := map[string]interface{}{}
+
 	if result == nil {
-		render.JSON(http.StatusOK, EMPTY_JSON_ARRAY)
+		response["result"] = EMPTY_JSON_ARRAY
 	} else {
-		render.JSON(http.StatusOK, result)
+		response["result"] = result
 	}
+
+	render.JSON(http.StatusOK, response)
 } 
