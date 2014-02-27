@@ -22,7 +22,7 @@ func main() {
 
   m := martini.Classic()
 
-  m.Map(session.DB("manga_scrape"))
+  m.Map(session.DB("production"))
   m.Use(gzip.All())
   m.Use(render.Renderer())
   m.Get("/api/series", api.GetSeriesList)

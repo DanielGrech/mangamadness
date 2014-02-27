@@ -3,7 +3,6 @@ package common
 import (
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
-	"time"
 	"strings"
 	"regexp"
 )
@@ -21,7 +20,7 @@ func stripchars(str, chr string) string {
 
 func getSeries(db *mgo.Database, url_segment string) (series *Series) {
 	c := db.C("series")
-	query := bson.M{"url_segment" : url_segment}
+	query := bson.M{"url_segment" : strings.ToLower(url_segment)}
 	c.Find(query).One(&series)	
 	return
 }
@@ -42,7 +41,7 @@ func getChapterId(db *mgo.Database, series_id bson.ObjectId, sequence_number int
 func getPagesInChapter(db *mgo.Database, chapter_id bson.ObjectId) (pages []Page) {
 	c := db.C("pages")
 	query := bson.M{"chapter_id" : chapter_id}
-	c.Find(query).Sort("name").All(&pages)
+	c.Find(query).Sort("sequence_number").All(&pages)
 	return
 }
 
@@ -50,18 +49,17 @@ func SearchSeries(db *mgo.Database, query string, limit int, update_since int) (
 	query = stripchars(query, "*/")
 	if charactersRegex.MatchString(query) {
 		c := db.C("series")
-		ts := bson.NewObjectIdWithTime(time.Unix(int64(update_since), 0))
 		q := bson.M{
-			"_id" : bson.M{
-				"$gt" : ts,
+			"time_created" : bson.M{
+				"$gte" : update_since,
 			},
-			"name" : bson.M {
-				"$regex" : ".*" + query + ".*",
+			"url_segment" : bson.M {
+				"$regex" : ".*" + strings.ToLower(query) + ".*",
 				"$options" : "-i",
 			},
 		}
 
-		c.Find(q).Limit(limit).Sort("name").All(&series)
+		c.Find(q).Limit(limit).Sort("url_segment").All(&series)
 	}
 
 	return
@@ -70,21 +68,18 @@ func SearchSeries(db *mgo.Database, query string, limit int, update_since int) (
 func GetSeriesList(db *mgo.Database, offset int, limit int, update_since int) (series []Series) {
 	c := db.C("series")
 
-	ts := bson.NewObjectIdWithTime(time.Unix(int64(update_since), 0))
-	query := bson.M{"_id" : bson.M{"$gt" : ts} }
-	c.Find(query).Limit(limit).Skip(offset).Sort("name").All(&series)
+	query := bson.M{"time_created" : bson.M{"$gte" : update_since} }
+	c.Find(query).Limit(limit).Skip(offset).Sort("url_segment").All(&series)
 	return
 }
 
 func GetChapterList(db *mgo.Database, series_name string, offset int, limit int, update_since int) (chapters []Chapter) {
 	series := getSeries(db, series_name)
 	if series != nil {
-		ts := bson.NewObjectIdWithTime(time.Unix(int64(update_since), 0))
-
 		c := db.C("chapters")
 		query := bson.M{
 			"series_id" : series.Id,
-			"_id"		: bson.M{"$gt" : ts},
+			"time_created"		: bson.M{"$gte" : update_since},
 		}
 		c.Find(query).Limit(limit).Skip(offset).Sort("sequence_number").All(&chapters)
 	}
