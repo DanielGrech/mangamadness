@@ -10,6 +10,7 @@ import common
 import pickle
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
+import urllib
 
 class Consumer:
 	def __init__(self, host, port, bucket):
@@ -39,7 +40,7 @@ class Consumer:
 		
 		os.remove(filename)
 		
-		return 'http://{bucket}.{host}/{key}'.format(host='s3.amazonaws.com', bucket=self.bucket.name, key=keyname)
+		return 'http://{bucket}.{host}/{key}'.format(host='s3.amazonaws.com', bucket=self.bucket.name, key=urllib.quote(keyname))
 
 	def consume(self):
 		while True:

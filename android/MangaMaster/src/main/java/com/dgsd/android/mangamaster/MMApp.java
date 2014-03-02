@@ -1,9 +1,10 @@
 package com.dgsd.android.mangamaster;
 
 import android.app.Application;
+import com.dgsd.android.mangamaster.modules.ApiModule;
 import com.dgsd.android.mangamaster.modules.AppModule;
+import com.dgsd.android.mangamaster.modules.AppServicesModule;
 import com.dgsd.android.mangamaster.modules.DaoModule;
-import com.dgsd.android.mangamaster.modules.OttoModule;
 import com.dgsd.android.mangamaster.util.ReleaseLogger;
 import dagger.ObjectGraph;
 import timber.log.Timber;
@@ -36,7 +37,8 @@ public class MMApp extends Application {
     private Object[] getDiModules() {
         return new Object[]{
                 new AppModule(this),
-                new OttoModule(),
+                new ApiModule(),
+                new AppServicesModule(),
                 new DaoModule()
         };
     }

@@ -34,3 +34,14 @@ type Series struct {
 	Genres []string `json:"genres"` 
 	Time_created int64 `json:"time_created"`  
 }
+
+type User struct {
+	Id bson.ObjectId
+	Display_name string
+	Email string
+	Country_code string
+	Facebook_id string
+	Gplus_id string
+	Favourite_series []Series
+	Favourite_chapters []Chapter
+}

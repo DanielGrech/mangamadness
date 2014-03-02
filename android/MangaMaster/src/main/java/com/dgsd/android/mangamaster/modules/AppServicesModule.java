@@ -5,14 +5,18 @@ import android.content.Context;
 import android.support.v4.content.LocalBroadcastManager;
 import com.dgsd.android.mangamaster.BuildConfig;
 import com.dgsd.android.mangamaster.MMApp;
+import com.dgsd.android.mangamaster.activity.MainActivity;
 import com.path.android.jobqueue.BaseJob;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.di.DependencyInjector;
 import com.path.android.jobqueue.log.CustomLogger;
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
 import dagger.Module;
 import dagger.Provides;
+import retrofit.RestAdapter;
 import timber.log.Timber;
 
 import javax.inject.Singleton;
@@ -24,7 +28,7 @@ import javax.inject.Singleton;
         complete = false,
         library = true,
         injects = {
-
+                MainActivity.class
         }
 )
 public class AppServicesModule {
@@ -39,6 +43,12 @@ public class AppServicesModule {
     @Singleton
     public ContentResolver providesContentResolver(@ForApplication Context context){
         return context.getApplicationContext().getContentResolver();
+    }
+
+    @Provides
+    @Singleton
+    public Bus providesBus() {
+        return new Bus(ThreadEnforcer.ANY);
     }
 
     @Provides

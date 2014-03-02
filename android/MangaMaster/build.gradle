@@ -28,6 +28,7 @@ android {
         packageName appPackageName
 
         buildConfigField "String", "CONTENT_AUTHORITY", "\"${appPackageName}.\" + BUILD_TYPE"
+        buildConfigField "String", "BASE_API_URL", "\"${baseApiUrl}\""
     }
 
     compileOptions {

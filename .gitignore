@@ -1,6 +1,8 @@
 # Our image cache
 scraper/cache
 
+mangamaster
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
