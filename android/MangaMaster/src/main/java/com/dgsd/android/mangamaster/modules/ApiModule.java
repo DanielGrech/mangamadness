@@ -17,8 +17,12 @@ import javax.inject.Singleton;
  * Provides access to the underlying API
  */
 @Module(
-        complete = true,
-        library = true
+        complete = false,
+        library = true,
+
+        injects = {
+                ApiManager.class,
+        }
 )
 public class ApiModule {
 
@@ -26,6 +30,18 @@ public class ApiModule {
 
     public ApiModule() {
         mRestAdapter = getRestAdapter();
+    }
+
+    @Provides
+    @Singleton
+    public IApiManager providesApiManager(@ForApplication Context context) {
+        return new ApiManager(context);
+    }
+
+    @Provides
+    @Singleton
+    public IPersistenceManager providesPersistenceManager(@ForApplication Context context) {
+        return new PersistenceManager(context);
     }
 
     @Provides

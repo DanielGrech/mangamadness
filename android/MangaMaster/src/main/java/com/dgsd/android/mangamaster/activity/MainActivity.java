@@ -6,18 +6,13 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.dgsd.android.mangamaster.R;
-import com.dgsd.android.mangamaster.api.MangaMadnessApi;
-import com.dgsd.android.mangamaster.model.SeriesListRequest;
 import com.dgsd.android.mangamaster.util.Api;
+import com.path.android.jobqueue.JobManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
-import com.squareup.otto.Subscribe;
-import retrofit.RestAdapter;
-import timber.log.Timber;
 
 import javax.inject.Inject;
 
@@ -30,7 +25,8 @@ public class MainActivity extends BaseActivity {
     DrawerLayout mNavigationDrawer;
 
     @Inject
-    MangaMadnessApi mMangaApi;
+    JobManager mJobManager;
+
 
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -43,14 +39,6 @@ public class MainActivity extends BaseActivity {
         setupDrawerToggle();
         setupNavigationDrawer();
         setupTintManager();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SeriesListRequest seriesListRequest = mMangaApi.getSeriesList(0, 10, 0);
-                Timber.e("Series = %s", seriesListRequest);
-            }
-        }).start();
     }
 
     @Override

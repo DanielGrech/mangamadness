@@ -7,7 +7,6 @@ import android.os.Parcelable;
  */
 public abstract class BaseModel implements Parcelable {
 
-
     @Override
     public int describeContents() {
         return hashCode();

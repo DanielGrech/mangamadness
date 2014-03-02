@@ -6,6 +6,9 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.dgsd.android.mangamaster.BuildConfig;
 import com.dgsd.android.mangamaster.MMApp;
 import com.dgsd.android.mangamaster.activity.MainActivity;
+import com.dgsd.android.mangamaster.jobs.GetChapterListJob;
+import com.dgsd.android.mangamaster.jobs.GetPagesListJob;
+import com.dgsd.android.mangamaster.jobs.GetSeriesListJob;
 import com.path.android.jobqueue.BaseJob;
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.JobManager;
@@ -28,7 +31,13 @@ import javax.inject.Singleton;
         complete = false,
         library = true,
         injects = {
-                MainActivity.class
+                // Activities
+                MainActivity.class,
+
+                // Jobs
+                GetSeriesListJob.class,
+                GetChapterListJob.class,
+                GetPagesListJob.class
         }
 )
 public class AppServicesModule {

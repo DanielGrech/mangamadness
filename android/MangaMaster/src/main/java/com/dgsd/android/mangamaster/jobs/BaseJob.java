@@ -6,6 +6,7 @@ import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
 import com.dgsd.android.mangamaster.api.IApiManager;
 import com.dgsd.android.mangamaster.api.IPersistenceManager;
+import timber.log.Timber;
 
 import javax.inject.Inject;
 import java.util.UUID;
@@ -29,9 +30,6 @@ public abstract class BaseJob extends Job {
     @Inject
     transient IApiManager mApiManager;
 
-    @Inject
-    transient IPersistenceManager mPersistenceManager;
-
     protected abstract void runJob();
 
     public BaseJob(Params params) {
@@ -47,7 +45,13 @@ public abstract class BaseJob extends Job {
     @Override
     public void onRun() throws Throwable {
         sendStartBroadcast(mToken);
+
+//        final long startTime = System.nanoTime();
+
         runJob();
+
+//        Timber.d("Time: %d", ( (System.nanoTime() - startTime) / 1000000));
+
         sendFinishBroadcast(mToken);
     }
 

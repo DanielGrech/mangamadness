@@ -20,11 +20,15 @@ public class MMContentProvider extends ContentProvider {
 
     private static final Uri BASE_URI = Uri.parse("content://" + AUTHORITY);
 
-    // public static final Uri FORECAST_LOADER_URI = Uri.withAppendedPath(BASE_URI, "forecast_loader");
+    public static final int TYPE_SERIES = 0x1;
+    public static final int TYPE_SERIES_GENRES = 0x2;
+    public static final int TYPE_CHAPTERS = 0x3;
+    public static final int TYPE_PAGES = 0x4;
 
-    // public static final int TYPE_FORECASTS = 0x1;
-
-    // public static Uri FORECASTS_URI;
+    public static Uri SERIES_URI;
+    public static Uri SERIES_GENRE_URI;
+    public static Uri CHAPTERS_URI;
+    public static Uri PAGES_URI;
 
     private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -33,9 +37,15 @@ public class MMContentProvider extends ContentProvider {
     private ContentResolver mContentResolver;
 
     static {
-        // FORECASTS_URI = Uri.withAppendedPath(BASE_URI, "forecasts");
+        SERIES_URI = Uri.withAppendedPath(BASE_URI, "series");
+        SERIES_GENRE_URI = Uri.withAppendedPath(BASE_URI, "genres");
+        CHAPTERS_URI = Uri.withAppendedPath(BASE_URI, "chapters");
+        PAGES_URI = Uri.withAppendedPath(BASE_URI, "pages");
 
-        // sURIMatcher.addURI(AUTHORITY, "forecasts", TYPE_FORECASTS);
+        sURIMatcher.addURI(AUTHORITY, "series", TYPE_SERIES);
+        sURIMatcher.addURI(AUTHORITY, "genres", TYPE_SERIES_GENRES);
+        sURIMatcher.addURI(AUTHORITY, "chapters", TYPE_CHAPTERS);
+        sURIMatcher.addURI(AUTHORITY, "pages", TYPE_PAGES);
     }
 
     @Override
@@ -136,6 +146,14 @@ public class MMContentProvider extends ContentProvider {
 
     private DbField[] getUpsertFieldsFromType(int type) {
         switch (type) {
+            case TYPE_SERIES:
+                return new DbField[]{ Db.Field.SERIES_ID };
+            case TYPE_SERIES_GENRES:
+                return new DbField[]{ Db.Field.SERIES_ID, Db.Field.NAME };
+            case TYPE_CHAPTERS:
+                return new DbField[]{ Db.Field.CHAPTER_ID };
+            case TYPE_PAGES:
+                return new DbField[]{ Db.Field.PAGE_ID };
             default:
                 return null;
         }
@@ -143,6 +161,14 @@ public class MMContentProvider extends ContentProvider {
 
     private DbTable getTableFromType(int type) {
         switch (type) {
+            case TYPE_SERIES:
+                return Db.Table.SERIES;
+            case TYPE_SERIES_GENRES:
+                return Db.Table.GENRES;
+            case TYPE_CHAPTERS:
+                return Db.Table.CHAPTERS;
+            case TYPE_PAGES:
+                return Db.Table.PAGES;
             default:
                 throw new IllegalArgumentException("Unrecognised uri type: " + type);
         }

@@ -127,4 +127,18 @@ public class MangaChapter extends BaseModel {
             return new MangaChapter[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "MangaChapter{" +
+                "mId=" + mId +
+                ", mChapterId='" + mChapterId + '\'' +
+                ", mSeriesId='" + mSeriesId + '\'' +
+                ", mName='" + mName + '\'' +
+                ", mTitle='" + mTitle + '\'' +
+                ", mSequenceNumber=" + mSequenceNumber +
+                ", mReleaseDate=" + mReleaseDate +
+                ", mTimeCreated=" + mTimeCreated +
+                '}';
+    }
 }

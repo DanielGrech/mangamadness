@@ -101,4 +101,16 @@ public class MangaPage extends BaseModel {
             return new MangaPage[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "MangaPage{" +
+                "mId=" + mId +
+                ", mPageId='" + mPageId + '\'' +
+                ", mChapterId='" + mChapterId + '\'' +
+                ", mImageUrl='" + mImageUrl + '\'' +
+                ", mName=" + mName +
+                ", mTimeCreated=" + mTimeCreated +
+                '}';
+    }
 }

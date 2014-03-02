@@ -29,8 +29,8 @@ func extract(values url.Values) (limit int, offset int, updatedSince int) {
 	limit, err := strconv.Atoi(values.Get("limit"))
 	if err != nil {
 		limit = defaultLimit
-	} else if limit < 0 {
-		limit = 0
+	} else if limit <= 0 {
+		limit = defaultLimit
 	} else if limit > maxLimit {
 		limit = maxLimit
 	}
@@ -100,6 +100,7 @@ func GetChapterList(request *http.Request, render render.Render, params martini.
 	result := common.GetChapterList(db, series_name, offset, limit, updated_since)
 
 	response := map[string]interface{}{
+		"series" : series_name,
 		"limit" : limit,
 		"offset" : offset,
 		"updated_since" : updated_since,
@@ -120,9 +121,13 @@ func GetChapterFromSeries(render render.Render, params martini.Params, db *mgo.D
 	chapter_num, error := strconv.Atoi(chapter_num_str)
 
 	response := map[string]interface{}{}
+
 	if error != nil {
 		response["result"] = EMPTY_JSON_ARRAY	
 	} else {
+		response["series"] = series_name
+		response["chapter"] = chapter_num
+
 		result := common.GetChapterFromSeries(db, series_name, chapter_num)
 		if result == nil {
 			response["result"] = EMPTY_JSON_ARRAY

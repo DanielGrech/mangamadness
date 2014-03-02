@@ -120,6 +120,10 @@ public class MangaSeries extends BaseModel {
         mGenres = genres;
     }
 
+    public boolean hasGenres() {
+        return mGenres != null && !mGenres.isEmpty();
+    }
+
     public long getTimeCreated() {
         return mTimeCreated;
     }
@@ -169,4 +173,21 @@ public class MangaSeries extends BaseModel {
             return new MangaSeries[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "MangaSeries{" +
+                "mId=" + mId +
+                ", mSeriesId='" + mSeriesId + '\'' +
+                ", mName='" + mName + '\'' +
+                ", mAuthor='" + mAuthor + '\'' +
+                ", mArtist='" + mArtist + '\'' +
+                ", mSummary='" + mSummary + '\'' +
+                ", mUrlSegment='" + mUrlSegment + '\'' +
+                ", mCoverImageUrl='" + mCoverImageUrl + '\'' +
+                ", mYearOfRelease=" + mYearOfRelease +
+                ", mGenres=" + mGenres +
+                ", mTimeCreated=" + mTimeCreated +
+                '}';
+    }
 }
