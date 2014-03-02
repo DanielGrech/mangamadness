@@ -4,6 +4,7 @@ import android.content.Context;
 import com.dgsd.android.mangamaster.BuildConfig;
 import com.dgsd.android.mangamaster.MMApp;
 import com.dgsd.android.mangamaster.activity.MainActivity;
+import com.dgsd.android.mangamaster.activity.StartupActivity;
 import com.dgsd.android.mangamaster.api.*;
 import dagger.Module;
 import dagger.Provides;
@@ -22,6 +23,7 @@ import javax.inject.Singleton;
 
         injects = {
                 ApiManager.class,
+                StartupActivity.class,
         }
 )
 public class ApiModule {
@@ -30,6 +32,12 @@ public class ApiModule {
 
     public ApiModule() {
         mRestAdapter = getRestAdapter();
+    }
+
+    @Provides
+    @Singleton
+    public IAccountManager providesAccountManager(@ForApplication Context context) {
+        return new UserAccountManager(context);
     }
 
     @Provides

@@ -5,12 +5,14 @@ import android.content.Context;
 import android.support.v4.content.LocalBroadcastManager;
 import com.dgsd.android.mangamaster.BuildConfig;
 import com.dgsd.android.mangamaster.MMApp;
+import com.dgsd.android.mangamaster.activity.LoginActivity;
 import com.dgsd.android.mangamaster.activity.MainActivity;
+import com.dgsd.android.mangamaster.activity.StartupActivity;
 import com.dgsd.android.mangamaster.jobs.GetChapterListJob;
 import com.dgsd.android.mangamaster.jobs.GetPagesListJob;
 import com.dgsd.android.mangamaster.jobs.GetSeriesListJob;
+import com.dgsd.android.mangamaster.util.PrefUtils;
 import com.path.android.jobqueue.BaseJob;
-import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.config.Configuration;
 import com.path.android.jobqueue.di.DependencyInjector;
@@ -19,7 +21,6 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.ThreadEnforcer;
 import dagger.Module;
 import dagger.Provides;
-import retrofit.RestAdapter;
 import timber.log.Timber;
 
 import javax.inject.Singleton;
@@ -32,6 +33,7 @@ import javax.inject.Singleton;
         library = true,
         injects = {
                 // Activities
+                LoginActivity.class,
                 MainActivity.class,
 
                 // Jobs
@@ -44,13 +46,19 @@ public class AppServicesModule {
 
     @Provides
     @Singleton
+    public PrefUtils providesPrefUtils(@ForApplication Context context) {
+        return new PrefUtils(context);
+    }
+
+    @Provides
+    @Singleton
     public LocalBroadcastManager providesLocalBroadcastManager(@ForApplication Context context) {
         return LocalBroadcastManager.getInstance(context.getApplicationContext());
     }
 
     @Provides
     @Singleton
-    public ContentResolver providesContentResolver(@ForApplication Context context){
+    public ContentResolver providesContentResolver(@ForApplication Context context) {
         return context.getApplicationContext().getContentResolver();
     }
 

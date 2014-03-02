@@ -13,14 +13,18 @@
             android:label="@string/app_name"
             android:name=".MMApp">
 
-        <activity
-                android:name=".activity.MainActivity"
-                android:label="@string/app_name">
+        <activity android:name=".activity.StartupActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+                android:name=".activity.MainActivity"
+                android:label="@string/app_name"/>
+
+        <activity android:name=".activity.LoginActivity" />
 
         <provider
                 android:authorities="@string/content_provider_authority"
