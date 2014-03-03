@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import com.dgsd.android.mangamaster.MMApp;
 import com.dgsd.android.mangamaster.api.IAccountManager;
-import com.dgsd.android.mangamaster.util.PrefUtils;
 
 import javax.inject.Inject;
 

@@ -3,14 +3,19 @@ package com.dgsd.android.mangamaster.activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.dgsd.android.mangamaster.R;
 import com.dgsd.android.mangamaster.util.Api;
+import com.dgsd.android.mangamaster.util.EnumUtils;
 import com.path.android.jobqueue.JobManager;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
@@ -21,12 +26,18 @@ import javax.inject.Inject;
  */
 public class MainActivity extends BaseActivity {
 
+    private static enum Page {
+        ALPHA, LATEST, FAVOURITES
+    }
+
     @InjectView(R.id.navigation_drawer)
     DrawerLayout mNavigationDrawer;
 
+    @InjectView(R.id.view_pager)
+    ViewPager mPager;
+
     @Inject
     JobManager mJobManager;
-
 
     ActionBarDrawerToggle mDrawerToggle;
 
@@ -39,6 +50,7 @@ public class MainActivity extends BaseActivity {
         setupDrawerToggle();
         setupNavigationDrawer();
         setupTintManager();
+        setupViews();
     }
 
     @Override
@@ -110,10 +122,64 @@ public class MainActivity extends BaseActivity {
             tintManager.setStatusBarTintEnabled(true);
 
             //We want to insert our app drawer
-            final View v = ButterKnife.findById(this, R.id.drawer);
-            DrawerLayout.LayoutParams layoutParams = (DrawerLayout.LayoutParams) v.getLayoutParams();
-            layoutParams.topMargin = tintManager.getConfig().getPixelInsetTop(true);
-            v.setLayoutParams(layoutParams);
+            final View[] views = {
+                    ButterKnife.findById(this, R.id.drawer),
+                    ButterKnife.findById(this, R.id.view_pager)
+            };
+
+            for (View v : views) {
+                DrawerLayout.LayoutParams layoutParams
+                        = (DrawerLayout.LayoutParams) v.getLayoutParams();
+                layoutParams.topMargin = tintManager.getConfig().getPixelInsetTop(true);
+                v.setLayoutParams(layoutParams);
+            }
+        }
+    }
+
+    private void setupViews() {
+        mPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.main_pager_page_margin));
+        mPager.setAdapter(new PageAdapter());
+    }
+
+    private class PageAdapter extends PagerAdapter {
+
+        @Override
+        public int getCount() {
+            return Page.values().length;
+        }
+
+        @Override
+        public boolean isViewFromObject(final View view, final Object o) {
+            return view == o;
+        }
+
+        @Override
+        public Object instantiateItem(final ViewGroup container, final int position) {
+            final TextView tv = new TextView(container.getContext());
+            tv.setText(String.valueOf(position));
+
+            container.addView(tv);
+
+            return tv;
+        }
+
+        @Override
+        public void destroyItem(final ViewGroup container, final int position, final Object object) {
+            container.removeView((View) object);
+        }
+
+        @Override
+        public CharSequence getPageTitle(final int position) {
+            switch (EnumUtils.from(Page.class, position)) {
+                case ALPHA:
+                    return getString(R.string.all);
+                case LATEST:
+                    return getString(R.string.latest);
+                case FAVOURITES:
+                    return getString(R.string.favourites);
+                default:
+                    throw new IllegalStateException("Unexpected pager position: " + position);
+            }
         }
     }
 }

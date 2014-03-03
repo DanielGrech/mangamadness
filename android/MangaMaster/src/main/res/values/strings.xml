@@ -4,4 +4,7 @@
     <string name="unknown_error">Unknown error</string>
     <string name="drawer_open">Open navigation</string>
     <string name="drawer_close">Close navigation</string>
+    <string name="all">All</string>
+    <string name="latest">Latest</string>
+    <string name="favourites">Favourites</string>
 </resources>

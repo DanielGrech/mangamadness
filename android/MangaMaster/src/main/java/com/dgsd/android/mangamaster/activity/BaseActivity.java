@@ -79,9 +79,9 @@ public abstract class BaseActivity extends Activity {
     /**
      * Listen out for API broadcasts of type <code>token</code>
      *
-     * @param token The token returned from a method in {@link AsyncRequest}
+     * @param token The token returned from {@link com.dgsd.android.mangamaster.jobs.BaseJob#getToken()}
      */
-    protected void registerForJob(String token) {
+    public void registerForJob(String token) {
         mApiReceiver.addAcceptableToken(token);
     }
 
