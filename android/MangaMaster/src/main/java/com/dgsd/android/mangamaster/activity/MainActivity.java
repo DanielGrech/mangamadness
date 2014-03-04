@@ -117,6 +117,8 @@ public class MainActivity extends BaseActivity {
     private void setupViews() {
         mPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.main_pager_page_margin));
         mPager.setAdapter(new PageAdapter());
+
+        mPager.setCurrentItem(Page.LATEST.ordinal());
     }
 
     private class PageAdapter extends PagerAdapter {
