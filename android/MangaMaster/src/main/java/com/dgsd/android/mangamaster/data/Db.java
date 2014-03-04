@@ -99,7 +99,7 @@ public class Db extends SQLiteOpenHelper {
         public static final DbField AUTHOR = new DbField("author", "text");
         public static final DbField ARTIST = new DbField("artist", "text");
         public static final DbField SUMMARY = new DbField("summary", "text");
-        public static final DbField URL_SEGMENT = new DbField("url_segment", "text");
+        public static final DbField URL_SEGMENT = new DbField("url_segment", "text", "collate nocase");
         public static final DbField COVER_IMAGE_URL = new DbField("cover_image_url", "text");
         public static final DbField YEAR_OF_RELEASE = new DbField("year_of_release", "integer");
         public static final DbField TIME_CREATED = new DbField("time_created", "integer");
