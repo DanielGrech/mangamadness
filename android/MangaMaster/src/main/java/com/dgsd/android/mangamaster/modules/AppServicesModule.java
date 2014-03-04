@@ -8,6 +8,7 @@ import com.dgsd.android.mangamaster.MMApp;
 import com.dgsd.android.mangamaster.activity.LoginActivity;
 import com.dgsd.android.mangamaster.activity.MainActivity;
 import com.dgsd.android.mangamaster.activity.StartupActivity;
+import com.dgsd.android.mangamaster.fragment.LoginChoiceFragment;
 import com.dgsd.android.mangamaster.jobs.GetChapterListJob;
 import com.dgsd.android.mangamaster.jobs.GetPagesListJob;
 import com.dgsd.android.mangamaster.jobs.GetSeriesListJob;
@@ -35,6 +36,9 @@ import javax.inject.Singleton;
                 // Activities
                 LoginActivity.class,
                 MainActivity.class,
+
+                // Fragments
+                LoginChoiceFragment.class,
 
                 // Jobs
                 GetSeriesListJob.class,

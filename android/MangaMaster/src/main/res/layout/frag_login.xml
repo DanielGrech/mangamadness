@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|center_horizontal"
+        android:padding="@dimen/default_padding">
+
+    <FrameLayout
+            android:id="@+id/sign_in_wrapper_google"
+            android:background="@drawable/google_sign_in_button"
+            style="@style/LoginButton.Wrapper">
+
+        <TextView
+                android:text="@string/sign_in_with_google"
+                style="@style/LoginButton.Text"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+            android:id="@+id/sign_in_wrapper_facebook"
+            android:background="@drawable/facebook_sign_in_button"
+            style="@style/LoginButton.Wrapper">
+
+        <TextView
+                android:text="@string/sign_in_with_facebook"
+                style="@style/LoginButton.Text"/>
+
+    </FrameLayout>
+
+    <FrameLayout
+            android:id="@+id/sign_in_wrapper_email"
+            style="@style/LoginButton.Wrapper">
+
+        <TextView
+                android:text="@string/sign_in_with_email"
+                style="@style/LoginButton.Text"/>
+
+    </FrameLayout>
+
+    <TextView
+            android:id="@+id/skip_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:gravity="center"
+            android:text="@string/i_dont_want_to_sign_in"/>
+
+</LinearLayout>

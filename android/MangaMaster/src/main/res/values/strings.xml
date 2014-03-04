@@ -7,4 +7,9 @@
     <string name="all">All</string>
     <string name="latest">Latest</string>
     <string name="favourites">Favourites</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="sign_in_with_facebook">Sign in with Facebook</string>
+    <string name="sign_in_with_twitter">Sign in with Twitter</string>
+    <string name="i_dont_want_to_sign_in">I dont want to sign in…</string>
+    <string name="sign_in_with_email">Sign in with Username/Email</string>
 </resources>

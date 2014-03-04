@@ -5,5 +5,9 @@
     <color name="translucent_black">#AA000000</color>
     <color name="light_text">#BCBCBC</color>
     <color name="dark_text">#333333</color>
+    <color name="google_sign_in_color">#D0361F</color>
+    <color name="google_sign_in_color_border">#DF3A20</color>
+    <color name="facebook_sign_in_color">#3F5296</color>
+    <color name="facebook_sign_in_color_border">#4066AB</color>
 
 </resources>

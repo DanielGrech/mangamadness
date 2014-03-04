@@ -54,8 +54,10 @@ android {
 
 }
 
+
 dependencies {
     compile 'com.android.support:support-v4:+'
+    compile 'com.google.android.gms:play-services:4.1.32'
     compile 'com.jakewharton.timber:timber:2.0.+'
     compile 'com.squareup.dagger:dagger-compiler:1.2.+'
     compile 'com.squareup.dagger:dagger:1.2.+'
@@ -65,6 +67,7 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.4.+'
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.path:android-priority-jobqueue:1.1.+'
+
     compile fileTree(dir: '../libs', include: '*.jar')
 
     instrumentTestCompile 'org.easytesting:fest-assert-core:2.0M10'

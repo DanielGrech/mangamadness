@@ -14,10 +14,8 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.dgsd.android.mangamaster.R;
-import com.dgsd.android.mangamaster.util.Api;
 import com.dgsd.android.mangamaster.util.EnumUtils;
 import com.path.android.jobqueue.JobManager;
-import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import javax.inject.Inject;
 
@@ -49,8 +47,9 @@ public class MainActivity extends BaseActivity {
 
         setupDrawerToggle();
         setupNavigationDrawer();
-        setupTintManager();
         setupViews();
+        setupTintManagerForViews(true, false, ButterKnife.findById(this, R.id.drawer),
+                ButterKnife.findById(this, R.id.view_pager));
     }
 
     @Override
@@ -113,27 +112,6 @@ public class MainActivity extends BaseActivity {
     private void setupNavigationDrawer() {
         mNavigationDrawer.setDrawerListener(mDrawerToggle);
         mNavigationDrawer.setDrawerShadow(R.drawable.drawer_shadow, Gravity.LEFT);
-    }
-
-    private void setupTintManager() {
-        if (Api.isMin(Api.KITKAT)) {
-            SystemBarTintManager tintManager = new SystemBarTintManager(this);
-            tintManager.setTintColor(getResources().getColor(R.color.ab_color));
-            tintManager.setStatusBarTintEnabled(true);
-
-            //We want to insert our app drawer
-            final View[] views = {
-                    ButterKnife.findById(this, R.id.drawer),
-                    ButterKnife.findById(this, R.id.view_pager)
-            };
-
-            for (View v : views) {
-                DrawerLayout.LayoutParams layoutParams
-                        = (DrawerLayout.LayoutParams) v.getLayoutParams();
-                layoutParams.topMargin = tintManager.getConfig().getPixelInsetTop(true);
-                v.setLayoutParams(layoutParams);
-            }
-        }
     }
 
     private void setupViews() {

@@ -3,4 +3,5 @@
     <dimen name="default_padding">16dp</dimen>
     <dimen name="app_drawer_width">250dp</dimen>
     <dimen name="main_pager_page_margin">@dimen/default_padding</dimen>
+    <dimen name="sign_in_button_corner_radius">3dp</dimen>
 </resources>
