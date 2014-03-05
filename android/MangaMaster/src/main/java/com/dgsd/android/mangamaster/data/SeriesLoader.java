@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.util.ArrayMap;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import com.dgsd.android.mangamaster.model.MangaSeries;
 import com.dgsd.android.mangamaster.util.DaoUtils;
@@ -22,9 +23,18 @@ public class SeriesLoader extends AsyncLoader<List<MangaSeries>> {
 
     private final Sort mSortOrder;
 
+    private final String mSeriesId;
+
     public SeriesLoader(final Context context, final Sort sort) {
         super(context);
         mSortOrder = sort;
+        mSeriesId = null;
+    }
+
+    public SeriesLoader(Context context, String seriesId) {
+        super(context);
+        mSeriesId = seriesId;
+        mSortOrder = null;
     }
 
     @Override
@@ -91,14 +101,22 @@ public class SeriesLoader extends AsyncLoader<List<MangaSeries>> {
         List<MangaSeries> series = new LinkedList<>();
         Cursor cursor = null;
         try {
-            final String sortStr;
+            String sortStr = null;
             if (mSortOrder == Sort.LATEST) {
                 sortStr = Db.Field.TIME_CREATED + " DESC";
-            } else {
+            } else if (mSortOrder == Sort.ALPHA) {
                 sortStr = Db.Field.URL_SEGMENT + " DESC";
             }
 
+            String selStr = null;
+            String[] selArgs = null;
+            if (!TextUtils.isEmpty(mSeriesId)) {
+                selStr = Db.Field.SERIES_ID + " = ?";
+                selArgs = new String[]{ mSeriesId };
+            }
+
             cursor = ProviderUtils.query(MMContentProvider.SERIES_URI)
+                    .where(selStr, selArgs)
                     .sort(sortStr)
                     .cursor(getContext());
 
