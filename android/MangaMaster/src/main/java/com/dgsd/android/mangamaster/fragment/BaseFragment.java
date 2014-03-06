@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.os.Bundle;
+import butterknife.ButterKnife;
 import com.dgsd.android.mangamaster.MMApp;
 import com.dgsd.android.mangamaster.activity.BaseActivity;
 import com.squareup.otto.Bus;
@@ -38,6 +39,12 @@ public abstract class BaseFragment extends Fragment {
 
         final MMApp app = (MMApp) getActivity().getApplication();
         app.inject(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
     }
 
     protected BaseActivity getBaseActivity() {

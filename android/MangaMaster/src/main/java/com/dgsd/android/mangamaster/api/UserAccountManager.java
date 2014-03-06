@@ -10,7 +10,7 @@ public class UserAccountManager implements IAccountManager {
 
     @Override
     public boolean isLoggedIn() {
-        return false;
+        return true;
     }
 
     @Override

@@ -1,20 +1,20 @@
 package com.dgsd.android.mangamaster.activity;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.dgsd.android.mangamaster.R;
+import com.dgsd.android.mangamaster.fragment.SeriesListFragment;
 import com.dgsd.android.mangamaster.util.EnumUtils;
+import com.dgsd.android.mangamaster.view.FragmentStatePagerAdapter;
 import com.path.android.jobqueue.JobManager;
 
 import javax.inject.Inject;
@@ -82,9 +82,21 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.act_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
+        } else {
+            switch (item.getItemId()) {
+                case R.id.search:
+                    //TODO: Search/Filter!
+                    return true;
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -116,12 +128,16 @@ public class MainActivity extends BaseActivity {
 
     private void setupViews() {
         mPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.main_pager_page_margin));
-        mPager.setAdapter(new PageAdapter());
-
+        mPager.setAdapter(new PageAdapter(getFragmentManager()));
+        mPager.setOffscreenPageLimit(2);
         mPager.setCurrentItem(Page.LATEST.ordinal());
     }
 
-    private class PageAdapter extends PagerAdapter {
+    private class PageAdapter extends FragmentStatePagerAdapter {
+
+        public PageAdapter(final FragmentManager fm) {
+            super(fm);
+        }
 
         @Override
         public int getCount() {
@@ -129,23 +145,17 @@ public class MainActivity extends BaseActivity {
         }
 
         @Override
-        public boolean isViewFromObject(final View view, final Object o) {
-            return view == o;
-        }
-
-        @Override
-        public Object instantiateItem(final ViewGroup container, final int position) {
-            final TextView tv = new TextView(container.getContext());
-            tv.setText(String.valueOf(position));
-
-            container.addView(tv);
-
-            return tv;
-        }
-
-        @Override
-        public void destroyItem(final ViewGroup container, final int position, final Object object) {
-            container.removeView((View) object);
+        public Fragment getItem(final int position) {
+            switch (EnumUtils.from(Page.class, position)) {
+                case ALPHA:
+                    return SeriesListFragment.create(SeriesListFragment.DisplayType.ALPHA);
+                case LATEST:
+                    return SeriesListFragment.create(SeriesListFragment.DisplayType.LATEST);
+                case FAVOURITES:
+                    return SeriesListFragment.create(SeriesListFragment.DisplayType.LATEST);
+                default:
+                    throw new IllegalStateException("Unexpected pager position: " + position);
+            }
         }
 
         @Override

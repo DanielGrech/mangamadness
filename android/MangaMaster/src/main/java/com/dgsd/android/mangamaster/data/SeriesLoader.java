@@ -105,7 +105,7 @@ public class SeriesLoader extends AsyncLoader<List<MangaSeries>> {
             if (mSortOrder == Sort.LATEST) {
                 sortStr = Db.Field.TIME_CREATED + " DESC";
             } else if (mSortOrder == Sort.ALPHA) {
-                sortStr = Db.Field.URL_SEGMENT + " DESC";
+                sortStr = Db.Field.URL_SEGMENT + " ASC";
             }
 
             String selStr = null;

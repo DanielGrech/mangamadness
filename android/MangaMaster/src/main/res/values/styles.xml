@@ -24,4 +24,23 @@
         <item name="android:drawablePadding">8dp</item>
     </style>
 
+    <style name="PagerTitleStripStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:paddingLeft">@dimen/default_padding</item>
+        <item name="android:paddingRight">@dimen/default_padding</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/accent_color</item>
+        <item name="android:textAppearance">@style/PagerTitleIndicatorTextAppearance</item>
+    </style>
+
+    <style name="PagerTitleIndicatorTextAppearance">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
 </resources>
