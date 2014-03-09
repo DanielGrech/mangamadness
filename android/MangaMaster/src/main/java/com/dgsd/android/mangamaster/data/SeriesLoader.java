@@ -68,7 +68,15 @@ public class SeriesLoader extends AsyncLoader<List<MangaSeries>> {
 
         Map<String, Set<String>> retval = null;
         try {
+            String sel = null;
+            String[] selArgs = null;
+            if (!TextUtils.isEmpty(mSeriesId)) {
+                sel = Db.Field.SERIES_ID + " = ?";
+                selArgs = new String[] { mSeriesId };
+            }
+
             cursor = ProviderUtils.query(MMContentProvider.SERIES_GENRE_URI)
+                    .where(sel, selArgs)
                     .sort(Db.Field.SERIES_ID + " ASC")
                     .cursor(getContext());
             if (cursor != null && cursor.moveToFirst()) {

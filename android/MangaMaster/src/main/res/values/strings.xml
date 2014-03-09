@@ -13,4 +13,8 @@
     <string name="i_dont_want_to_sign_in">I dont want to sign in…</string>
     <string name="sign_in_with_email">Sign in with Username/Email</string>
     <string name="search">Search</string>
+    <string name="author">Author</string>
+    <string name="year_of_release">Year of Release</string>
+    <string name="summary">Summary</string>
+    <string name="artist">Artist</string>
 </resources>

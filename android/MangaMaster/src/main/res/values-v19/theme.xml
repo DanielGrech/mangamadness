@@ -5,4 +5,11 @@
         <item name="android:windowTranslucentNavigation">@bool/is_portrait</item>
     </style>
 
+    <style name="AppTheme.OpaqueNavgiationBar" parent="AppTheme">
+        <item name="android:windowTranslucentNavigation">false</item>
+    </style>
+
+    <style name="AppTheme.ChapterActivity" parent="AppTheme.ChapterActivityBase">
+
+    </style>
 </resources>

@@ -5,10 +5,10 @@ import android.content.Context;
 import android.support.v4.content.LocalBroadcastManager;
 import com.dgsd.android.mangamaster.BuildConfig;
 import com.dgsd.android.mangamaster.MMApp;
-import com.dgsd.android.mangamaster.activity.LoginActivity;
-import com.dgsd.android.mangamaster.activity.MainActivity;
-import com.dgsd.android.mangamaster.activity.StartupActivity;
+import com.dgsd.android.mangamaster.activity.*;
+import com.dgsd.android.mangamaster.fragment.ChapterListFragment;
 import com.dgsd.android.mangamaster.fragment.LoginChoiceFragment;
+import com.dgsd.android.mangamaster.fragment.SeriesInfoFragment;
 import com.dgsd.android.mangamaster.fragment.SeriesListFragment;
 import com.dgsd.android.mangamaster.jobs.GetChapterListJob;
 import com.dgsd.android.mangamaster.jobs.GetPagesListJob;
@@ -37,10 +37,14 @@ import javax.inject.Singleton;
                 // Activities
                 LoginActivity.class,
                 MainActivity.class,
+                SeriesActivity.class,
+                ChapterActivity.class,
 
                 // Fragments
                 LoginChoiceFragment.class,
                 SeriesListFragment.class,
+                SeriesInfoFragment.class,
+                ChapterListFragment.class,
 
                 // Jobs
                 GetSeriesListJob.class,

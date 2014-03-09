@@ -4,4 +4,7 @@
     <dimen name="app_drawer_width">260dp</dimen>
     <dimen name="main_pager_page_margin">@dimen/default_padding</dimen>
     <dimen name="sign_in_button_corner_radius">3dp</dimen>
+    <dimen name="series_panel_height">72dp</dimen>
+    <dimen name="series_panel_image_height">200dp</dimen>
+    <dimen name="list_section_divider_min_height">32dip</dimen>
 </resources>

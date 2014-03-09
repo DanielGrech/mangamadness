@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_holo_light">
+
+    <View
+            android:id="@+id/drag_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/series_panel_height"
+            android:background="#0000FF"/>
+
+    <ScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fillViewport="true"
+                android:orientation="vertical">
+
+            <com.dgsd.android.mangamaster.view.UrlImageView
+                    android:id="@+id/cover_image_large"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/series_panel_image_height"/>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/default_padding">
+
+                <TextView
+                        android:id="@+id/author_title"
+                        android:text="@string/author"
+                        style="@style/SmallTitleTextViewStyle"/>
+
+                <TextView
+                        android:id="@+id/author"
+                        style="@style/SeriesInfoText"/>
+
+                <TextView
+                        android:id="@+id/artist_title"
+                        android:text="@string/artist"
+                        style="@style/SmallTitleTextViewStyle"/>
+
+                <TextView
+                        android:id="@+id/artist"
+                        style="@style/SeriesInfoText"/>
+
+                <TextView
+                        android:id="@+id/release_year_title"
+                        android:text="@string/year_of_release"
+                        style="@style/SmallTitleTextViewStyle"/>
+
+                <TextView
+                        android:id="@+id/release_year"
+                        style="@style/SeriesInfoText"/>
+
+                <TextView
+                        android:id="@+id/summary_title"
+                        android:text="@string/summary"
+                        style="@style/SmallTitleTextViewStyle"/>
+
+                <TextView
+                        android:id="@+id/summary"
+                        style="@style/SeriesInfoText"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>

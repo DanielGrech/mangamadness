@@ -1,20 +1,22 @@
 package com.dgsd.android.mangamaster.fragment;
 
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnItemClick;
 import com.dgsd.android.mangamaster.R;
+import com.dgsd.android.mangamaster.activity.SeriesActivity;
 import com.dgsd.android.mangamaster.data.SeriesLoader;
 import com.dgsd.android.mangamaster.model.MangaSeries;
 import com.dgsd.android.mangamaster.util.Api;
+import com.dgsd.android.mangamaster.util.CollectionBaseAdapter;
 import com.dgsd.android.mangamaster.util.UiUtils;
 import com.dgsd.android.mangamaster.view.SeriesListItemView;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
@@ -23,7 +25,8 @@ import java.util.List;
 
 import static com.dgsd.android.mangamaster.data.SeriesLoader.Sort;
 
-public class SeriesListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<List<MangaSeries>> {
+public class SeriesListFragment extends BaseFragment
+        implements LoaderManager.LoaderCallbacks<List<MangaSeries>> {
 
     public static enum DisplayType {
         ALPHA, LATEST
@@ -53,6 +56,7 @@ public class SeriesListFragment extends BaseFragment implements LoaderManager.Lo
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         mDisplayType = (DisplayType) getArguments().getSerializable(KEY_DISPLAY_TYPE);
     }
 
@@ -93,7 +97,7 @@ public class SeriesListFragment extends BaseFragment implements LoaderManager.Lo
 
     @Override
     public void onLoadFinished(final Loader<List<MangaSeries>> loader, final List<MangaSeries> series) {
-        mAdapter.setSeries(series);
+        mAdapter.setItems(series);
     }
 
     @Override
@@ -101,23 +105,20 @@ public class SeriesListFragment extends BaseFragment implements LoaderManager.Lo
 
     }
 
-    private class SeriesListAdapter extends BaseAdapter {
+    @OnItemClick(R.id.list)
+    public void onSeriesClicked(int position) {
+        final MangaSeries series = mAdapter.getItem(position);
 
-        private List<MangaSeries> mSeries;
+        final Intent intent = new Intent(getActivity(), SeriesActivity.class);
+        intent.putExtra(SeriesActivity.EXTRA_SERIES_ID, series.getSeriesId());
+        startActivity(intent);
+    }
 
-        @Override
-        public int getCount() {
-            return mSeries == null ? 0 : mSeries.size();
-        }
-
-        @Override
-        public MangaSeries getItem(final int position) {
-            return mSeries.get(position);
-        }
+    private class SeriesListAdapter extends CollectionBaseAdapter<MangaSeries> {
 
         @Override
         public long getItemId(final int position) {
-            return mSeries.get(position).getId();
+            return getItem(position).getId();
         }
 
         @Override
@@ -132,11 +133,6 @@ public class SeriesListFragment extends BaseFragment implements LoaderManager.Lo
 
             seriesView.populate(getItem(position));
             return seriesView;
-        }
-
-        public void setSeries(List<MangaSeries> series) {
-            mSeries = series;
-            notifyDataSetChanged();
         }
     }
 }

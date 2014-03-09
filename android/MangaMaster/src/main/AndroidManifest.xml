@@ -27,12 +27,19 @@
         </activity>
 
         <activity
-                android:name=".activity.MainActivity"
-                android:label="@string/app_name"/>
-
-        <activity
                 android:name=".activity.LoginActivity"
                 android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+                android:name=".activity.MainActivity"/>
+
+        <activity
+                android:name=".activity.ChapterActivity"
+                android:theme="@style/AppTheme.ChapterActivity"/>
+
+        <activity
+                android:name=".activity.SeriesActivity"
+                android:theme="@style/AppTheme.OpaqueNavgiationBar"/>
 
         <provider
                 android:authorities="@string/content_provider_authority"
