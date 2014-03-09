@@ -8,7 +8,6 @@ import pickle
 
 class Producer:
 	def __init__(self, host, port):
-		self.path = '/alphabetical'
 		self.beanstalk = beanstalkc.Connection(host=host, port=port)
 		self.beanstalk.use('series_updates')
 

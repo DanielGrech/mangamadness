@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import ProducerConsumer as pc
-from mangadb import db
+from mangadb import prodDb
 from bson.objectid import ObjectId
 from models import MangaSeries
 import logging
