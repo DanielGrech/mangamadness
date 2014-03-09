@@ -4,6 +4,7 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,8 @@ import java.util.List;
  */
 public class ChapterListFragment extends BaseFragment implements SlidePanel {
 
+    private static final int CHAPTER_REQUEST_LIMIT = 500;
+
     private static final int LOADER_ID_CHAPTERS = 1;
     private static final int LOADER_ID_SERIES = 2;
 
@@ -45,6 +48,8 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel {
     ListView mList;
 
     private ChapterListAdapter mAdapter;
+
+    private boolean mHasMadeInitialApiRequest;
 
     private LoaderManager.LoaderCallbacks<List<MangaChapter>> mChapterLoader
             = new LoaderManager.LoaderCallbacks<List<MangaChapter>>() {
@@ -68,14 +73,18 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel {
             = new LoaderManager.LoaderCallbacks<List<MangaSeries>>() {
         @Override
         public Loader<List<MangaSeries>> onCreateLoader(final int id, final Bundle args) {
-            return new SeriesLoader(getActivity(), mSeriesId);
+            return new SeriesLoader(getActivity(), true, mSeriesId);
         }
 
         @Override
         public void onLoadFinished(final Loader<List<MangaSeries>> loader, final List<MangaSeries> series) {
             mSeries = series == null || series.isEmpty() ? null : series.get(0);
             if (mSeries != null) {
-                //TODO: Load from server!
+
+                if (!mHasMadeInitialApiRequest) {
+                    loadChapters(CHAPTER_REQUEST_LIMIT, 0, 0);
+                    mHasMadeInitialApiRequest = true;
+                }
             }
         }
 
@@ -83,6 +92,8 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel {
         public void onLoaderReset(final Loader<List<MangaSeries>> loader) {
 
         }
+
+
     };
 
     @Override
@@ -116,6 +127,13 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel {
         final Intent intent = new Intent(getActivity(), ChapterActivity.class);
         intent.putExtra(ChapterActivity.EXTRA_CHAPTER_ID, chapter.getChapterId());
         startActivity(intent);
+    }
+
+    private void loadChapters(int limit, int offset, long since) {
+        if (mSeries != null && !TextUtils.isEmpty(mSeries.getUrlSegment())) {
+            mJobManager.addJobInBackground(new GetChapterListJob(mSeries.getUrlSegment(),
+                    limit, offset, since));
+        }
     }
 
     public void setSeries(String seriesId) {

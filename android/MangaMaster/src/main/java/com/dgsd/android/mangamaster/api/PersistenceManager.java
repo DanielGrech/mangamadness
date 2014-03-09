@@ -3,9 +3,9 @@ package com.dgsd.android.mangamaster.api;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 import com.dgsd.android.mangamaster.MMApp;
-import com.dgsd.android.mangamaster.data.Db;
-import com.dgsd.android.mangamaster.data.MMContentProvider;
+import com.dgsd.android.mangamaster.data.*;
 import com.dgsd.android.mangamaster.model.MangaChapter;
 import com.dgsd.android.mangamaster.model.MangaPage;
 import com.dgsd.android.mangamaster.model.MangaSeries;
@@ -47,6 +47,8 @@ public class PersistenceManager implements IPersistenceManager {
                     }
                 }
             }
+
+            notify(SeriesLoader.CONTENT_URI);
         }
     }
 
@@ -57,6 +59,8 @@ public class PersistenceManager implements IPersistenceManager {
                 mContentResolver.insert(MMContentProvider.CHAPTERS_URI,
                         DaoUtils.convert(c));
             }
+
+            notify(ChapterLoader.CONTENT_URI);
         }
     }
 
@@ -67,6 +71,12 @@ public class PersistenceManager implements IPersistenceManager {
                 mContentResolver.insert(MMContentProvider.PAGES_URI,
                         DaoUtils.convert(p));
             }
+
+            notify(PageLoader.CONTENT_URI);
         }
+    }
+
+    private void notify(Uri uri) {
+        mContentResolver.notifyChange(uri, null, true);
     }
 }

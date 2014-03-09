@@ -16,6 +16,8 @@ import java.util.List;
  */
 public class ChapterLoader extends AsyncLoader<List<MangaChapter>> {
 
+    public static Uri CONTENT_URI = Uri.parse("loader://chapter_loader");
+
     private final String mSeriesId;
 
     public ChapterLoader(final Context context, final String seriesId) {
@@ -25,7 +27,7 @@ public class ChapterLoader extends AsyncLoader<List<MangaChapter>> {
 
     @Override
     protected Uri getContentUri() {
-        return MMContentProvider.CHAPTERS_URI;
+        return CONTENT_URI;
     }
 
     @Override

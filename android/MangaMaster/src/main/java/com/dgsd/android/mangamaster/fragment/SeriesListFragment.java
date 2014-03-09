@@ -14,6 +14,7 @@ import butterknife.OnItemClick;
 import com.dgsd.android.mangamaster.R;
 import com.dgsd.android.mangamaster.activity.SeriesActivity;
 import com.dgsd.android.mangamaster.data.SeriesLoader;
+import com.dgsd.android.mangamaster.jobs.GetSeriesListJob;
 import com.dgsd.android.mangamaster.model.MangaSeries;
 import com.dgsd.android.mangamaster.util.Api;
 import com.dgsd.android.mangamaster.util.CollectionBaseAdapter;
@@ -27,6 +28,8 @@ import static com.dgsd.android.mangamaster.data.SeriesLoader.Sort;
 
 public class SeriesListFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<List<MangaSeries>> {
+
+    private static final int SERIES_REQUEST_LIMIT = 100;
 
     public static enum DisplayType {
         ALPHA, LATEST
@@ -42,6 +45,8 @@ public class SeriesListFragment extends BaseFragment
     ListView mList;
 
     private SeriesListAdapter mAdapter;
+
+    private boolean mHasMadeInitialApiRequest;
 
     public static SeriesListFragment create(DisplayType type) {
         SeriesListFragment frag = new SeriesListFragment();
@@ -87,11 +92,16 @@ public class SeriesListFragment extends BaseFragment
     public void onResume() {
         super.onResume();
         reload(LOADER_ID_SERIES, this);
+
+        if (!mHasMadeInitialApiRequest) {
+            loadSeries(SERIES_REQUEST_LIMIT, 0, 0);
+            mHasMadeInitialApiRequest = true;
+        }
     }
 
     @Override
     public Loader<List<MangaSeries>> onCreateLoader(final int id, final Bundle args) {
-        return new SeriesLoader(getActivity(),
+        return new SeriesLoader(getActivity(), false,
                 mDisplayType == DisplayType.LATEST ? Sort.LATEST : Sort.ALPHA);
     }
 
@@ -112,6 +122,10 @@ public class SeriesListFragment extends BaseFragment
         final Intent intent = new Intent(getActivity(), SeriesActivity.class);
         intent.putExtra(SeriesActivity.EXTRA_SERIES_ID, series.getSeriesId());
         startActivity(intent);
+    }
+
+    private void loadSeries(int limit, int offset, long since) {
+        mJobManager.addJobInBackground(new GetSeriesListJob(limit, offset, since));
     }
 
     private class SeriesListAdapter extends CollectionBaseAdapter<MangaSeries> {

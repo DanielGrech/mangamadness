@@ -15,11 +15,11 @@
     <style name="AppTheme.OpaqueNavgiationBar" parent="AppTheme" />
 
     <style name="AppTheme.ChapterActivityBase" parent="AppTheme">
+        <item name="android:windowBackground">@color/background_chapter_activity</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:actionBarStyle">@style/MangaMadness.ActionBar.ChapterActivity</item>
     </style>
 
     <style name="AppTheme.ChapterActivity" parent="AppTheme.ChapterActivityBase" />
-
 </resources>

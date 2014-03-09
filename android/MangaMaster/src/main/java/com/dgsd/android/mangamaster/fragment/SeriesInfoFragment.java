@@ -8,13 +8,13 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.dgsd.android.mangamaster.R;
 import com.dgsd.android.mangamaster.data.SeriesLoader;
 import com.dgsd.android.mangamaster.model.MangaSeries;
-import com.dgsd.android.mangamaster.view.ObservableScrollView;
 import com.dgsd.android.mangamaster.view.SlidePanel;
 import com.dgsd.android.mangamaster.view.UrlImageView;
 
@@ -24,6 +24,8 @@ public class SeriesInfoFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<List<MangaSeries>>, SlidePanel {
 
     private static final int LOADER_ID_SERIES = 0x2;
+
+    protected static final AccelerateInterpolator sFadeInterpolator = new AccelerateInterpolator(3f);
 
     private String mSeriesId;
 
@@ -50,6 +52,12 @@ public class SeriesInfoFragment extends BaseFragment
     @InjectView(R.id.release_year)
     TextView mReleaseYear;
 
+    @InjectView(R.id.genres_title)
+    TextView mGenresTitle;
+
+    @InjectView(R.id.genres)
+    TextView mGenres;
+
     @InjectView(R.id.summary_title)
     TextView mSummaryTitle;
 
@@ -59,8 +67,16 @@ public class SeriesInfoFragment extends BaseFragment
     @InjectView(R.id.drag_view)
     View mDragView;
 
-    private boolean mHasReachedEndFlag;
+    @InjectView(R.id.cover_image_small)
+    UrlImageView mCoverImageSmall;
 
+    @InjectView(R.id.title_small)
+    TextView mTitleSmall;
+
+    @InjectView(R.id.latest_update)
+    TextView mLatestUpdate;
+
+    private boolean mHasReachedEndFlag;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -85,7 +101,7 @@ public class SeriesInfoFragment extends BaseFragment
     public Loader<List<MangaSeries>> onCreateLoader(final int id, final Bundle args) {
         switch (id) {
             case LOADER_ID_SERIES: {
-                return new SeriesLoader(getActivity(), mSeriesId);
+                return new SeriesLoader(getActivity(), true, mSeriesId);
             }
 
             default:
@@ -107,7 +123,7 @@ public class SeriesInfoFragment extends BaseFragment
 
     @Override
     public void onPanelSlide(final float offset) {
-        mDragView.setAlpha(offset);
+        mDragView.setAlpha(sFadeInterpolator.getInterpolation(offset));
     }
 
     public View getDragView() {
@@ -124,12 +140,22 @@ public class SeriesInfoFragment extends BaseFragment
             }
 
             mCoverImageLarge.setImageUrl(series.getCoverImageUrl());
+            mCoverImageSmall.setImageUrl(series.getCoverImageUrl());
+
+            mTitleSmall.setText(series.getName());
+//            mLatestUpdate.setText(); TODO: Add time updated to model
 
             setTextOrHide(series.getAuthor(), mAuthor, mAuthorTitle);
             setTextOrHide(series.getArtist(), mArtist, mArtistTitle);
             setTextOrHide(series.getYearOfRelease() > 0 ?
                     String.valueOf(series.getYearOfRelease()) : null, mReleaseYear, mReleaseYearTitle);
             setTextOrHide(series.getSummary(), mSummary, mSummaryTitle);
+
+            String genresStr = null;
+            if (series.getGenres() != null && !series.getGenres().isEmpty()) {
+                genresStr = TextUtils.join(", ", series.getGenres());
+            }
+            setTextOrHide(genresStr, mGenres, mGenresTitle);
         }
     }
 

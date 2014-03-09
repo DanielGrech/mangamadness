@@ -11,5 +11,6 @@
     <color name="google_sign_in_color_border">#DF3A20</color>
     <color name="facebook_sign_in_color">#3F5296</color>
     <color name="facebook_sign_in_color_border">#4066AB</color>
+    <color name="background_chapter_activity">#171920</color>
 
 </resources>

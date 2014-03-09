@@ -106,7 +106,7 @@ public class ChapterListRequest extends BaseRequest {
     public String toString() {
         return "ChapterListRequest{" +
                 "mSeries=" + mSeries +
-                "mLimit=" + mLimit +
+                ", mLimit=" + mLimit +
                 ", mOffset=" + mOffset +
                 ", mUpdatedSince=" + mUpdatedSince +
                 ", mChapters=" + mChapters +

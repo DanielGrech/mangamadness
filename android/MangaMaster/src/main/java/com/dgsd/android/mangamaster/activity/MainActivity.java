@@ -9,16 +9,13 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.*;
-import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.dgsd.android.mangamaster.R;
 import com.dgsd.android.mangamaster.fragment.SeriesListFragment;
+import com.dgsd.android.mangamaster.jobs.GetSeriesListJob;
 import com.dgsd.android.mangamaster.util.EnumUtils;
 import com.dgsd.android.mangamaster.view.FragmentStatePagerAdapter;
-import com.github.kevinsawicki.http.HttpRequest;
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
 import com.path.android.jobqueue.JobManager;
 
 import javax.inject.Inject;
@@ -37,9 +34,6 @@ public class MainActivity extends BaseActivity {
 
     @InjectView(R.id.view_pager)
     ViewPager mPager;
-
-    @Inject
-    JobManager mJobManager;
 
     ActionBarDrawerToggle mDrawerToggle;
 

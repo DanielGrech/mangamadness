@@ -31,9 +31,6 @@ public class ApiManager implements IApiManager {
     @Override
     public void getSeriesList(int limit, int offset, long updatedSince) {
         SeriesListRequest results = mMMApi.getSeriesList(limit, offset, updatedSince);
-
-        Timber.d("Got series: %s", results);
-
         if (results != null && results.hasSeries()) {
             mPersistenceManager.saveSeries(results.getSeries());
         }
@@ -42,9 +39,6 @@ public class ApiManager implements IApiManager {
     @Override
     public void getChaptersInSeries(String series, int limit, int offset, long updatedSince) {
         ChapterListRequest results = mMMApi.getChapterList(series, limit, offset, updatedSince);
-
-        Timber.d("Got chapters %s", results);
-
         if (results != null && results.hasChapters()) {
             mPersistenceManager.saveChapters(results.getChapters());
         }

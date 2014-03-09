@@ -25,28 +25,37 @@ public class SeriesLoader extends AsyncLoader<List<MangaSeries>> {
 
     private final String mSeriesId;
 
-    public SeriesLoader(final Context context, final Sort sort) {
+    private boolean mIncludeGenres;
+
+    public static Uri CONTENT_URI = Uri.parse("loader://series_loader");
+
+    public SeriesLoader(final Context context, boolean includeGenres, final Sort sort) {
         super(context);
         mSortOrder = sort;
         mSeriesId = null;
+        mIncludeGenres = includeGenres;
     }
 
-    public SeriesLoader(Context context, String seriesId) {
+    public SeriesLoader(Context context, boolean includeGenres, String seriesId) {
         super(context);
         mSeriesId = seriesId;
         mSortOrder = null;
+        mIncludeGenres = includeGenres;
     }
 
     @Override
     protected Uri getContentUri() {
-        return MMContentProvider.SERIES_URI;
+        return CONTENT_URI;
     }
 
     @Override
     public List<MangaSeries> loadInBackground() {
         List<MangaSeries> series = getSeriesWithoutGenre();
         if (series != null) {
-            Map<String, Set<String>> seriesIdToGenre = getGenres();
+            Map<String, Set<String>> seriesIdToGenre = null;
+            if (mIncludeGenres) {
+                seriesIdToGenre = getGenres();
+            }
 
             if (seriesIdToGenre != null) {
                 for (MangaSeries mangaSeries : series) {

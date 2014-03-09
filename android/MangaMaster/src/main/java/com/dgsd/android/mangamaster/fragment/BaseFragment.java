@@ -8,6 +8,7 @@ import android.os.Bundle;
 import butterknife.ButterKnife;
 import com.dgsd.android.mangamaster.MMApp;
 import com.dgsd.android.mangamaster.activity.BaseActivity;
+import com.path.android.jobqueue.JobManager;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -19,6 +20,9 @@ public abstract class BaseFragment extends Fragment {
 
     @Inject
     protected Bus mEventBus;
+
+    @Inject
+    JobManager mJobManager;
 
     @Override
     public void onAttach(final Activity activity) {

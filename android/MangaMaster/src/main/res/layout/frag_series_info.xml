@@ -6,12 +6,6 @@
         android:layout_height="match_parent"
         android:background="@drawable/background_holo_light">
 
-    <View
-            android:id="@+id/drag_view"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/series_panel_height"
-            android:background="#0000FF"/>
-
     <ScrollView
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
@@ -34,7 +28,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="@dimen/default_padding">
+                    android:padding="@dimen/default_padding"
+                    android:animateLayoutChanges="true">
 
                 <TextView
                         android:id="@+id/author_title"
@@ -64,6 +59,15 @@
                         style="@style/SeriesInfoText"/>
 
                 <TextView
+                        android:id="@+id/genres_title"
+                        android:text="@string/genres"
+                        style="@style/SmallTitleTextViewStyle"/>
+
+                <TextView
+                        android:id="@+id/genres"
+                        style="@style/SeriesInfoText"/>
+
+                <TextView
                         android:id="@+id/summary_title"
                         android:text="@string/summary"
                         style="@style/SmallTitleTextViewStyle"/>
@@ -77,5 +81,38 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <RelativeLayout
+            android:id="@+id/drag_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/series_panel_height"
+            android:background="@drawable/background_holo_light">
+
+        <com.dgsd.android.mangamaster.view.UrlImageView
+                android:id="@+id/cover_image_small"
+                android:layout_width="@dimen/series_panel_height"
+                android:layout_height="@dimen/series_panel_height"
+                android:layout_alignParentLeft="true"/>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/cover_image_small"
+                android:layout_marginLeft="8dp"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+            <TextView
+                    android:id="@+id/title_small"
+                    style="@style/SeriesInfoText"/>
+
+            <TextView
+                    android:id="@+id/latest_update"
+                    android:textSize="15sp"
+                    style="@style/SeriesInfoText"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </FrameLayout>
