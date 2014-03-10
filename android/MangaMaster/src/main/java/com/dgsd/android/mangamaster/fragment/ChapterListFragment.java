@@ -23,6 +23,9 @@ import com.dgsd.android.mangamaster.util.CollectionBaseAdapter;
 import com.dgsd.android.mangamaster.view.ChapterListItemView;
 import com.dgsd.android.mangamaster.view.SlidePanel;
 import com.path.android.jobqueue.JobManager;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -30,7 +33,7 @@ import java.util.List;
 /**
  *
  */
-public class ChapterListFragment extends BaseFragment implements SlidePanel {
+public class ChapterListFragment extends BaseFragment implements SlidePanel, OnRefreshListener {
 
     private static final int CHAPTER_REQUEST_LIMIT = 500;
 
@@ -44,12 +47,17 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel {
     @Inject
     JobManager mJobManager;
 
+    @InjectView(R.id.ptr_layout)
+    PullToRefreshLayout mPullToRefreshLayout;
+
     @InjectView(R.id.list)
     ListView mList;
 
     private ChapterListAdapter mAdapter;
 
     private boolean mHasMadeInitialApiRequest;
+
+    private String mCurrentRefreshFromTopToken;
 
     private LoaderManager.LoaderCallbacks<List<MangaChapter>> mChapterLoader
             = new LoaderManager.LoaderCallbacks<List<MangaChapter>>() {
@@ -92,9 +100,29 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel {
         public void onLoaderReset(final Loader<List<MangaSeries>> loader) {
 
         }
-
-
     };
+
+    @Override
+    public boolean handleJobRequestStart(final String token) {
+        if (TextUtils.equals(token, mCurrentRefreshFromTopToken)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean handleJobRequestFinish(final String token) {
+        if (TextUtils.equals(token, mCurrentRefreshFromTopToken)) {
+            mCurrentRefreshFromTopToken = null;
+
+            mPullToRefreshLayout.setRefreshComplete();
+            mPullToRefreshLayout.setRefreshing(false);
+            return true;
+        }
+
+        return false;
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -106,6 +134,12 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.frag_chapter_list, container, false);
         ButterKnife.inject(this, v);
+
+        // Now setup the PullToRefreshLayout
+        ActionBarPullToRefresh.from(getActivity())
+                .allChildrenArePullable()
+                .listener(this)
+                .setup(mPullToRefreshLayout);
 
         mAdapter = new ChapterListAdapter();
         mList.setAdapter(mAdapter);
@@ -131,8 +165,16 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel {
 
     private void loadChapters(int limit, int offset, long since) {
         if (mSeries != null && !TextUtils.isEmpty(mSeries.getUrlSegment())) {
-            mJobManager.addJobInBackground(new GetChapterListJob(mSeries.getUrlSegment(),
-                    limit, offset, since));
+
+            final GetChapterListJob job
+                    = new GetChapterListJob(mSeries.getUrlSegment(), limit, offset, since);
+
+            if (offset == 0) {
+                mCurrentRefreshFromTopToken = job.getToken();
+                registerForJob(mCurrentRefreshFromTopToken);
+            }
+
+            mJobManager.addJobInBackground(job);
         }
     }
 
@@ -152,6 +194,11 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel {
     @Override
     public void onPanelSlide(final float offset) {
 
+    }
+
+    @Override
+    public void onRefreshStarted(final View view) {
+        loadChapters(CHAPTER_REQUEST_LIMIT, 0, 0);
     }
 
     private class ChapterListAdapter extends CollectionBaseAdapter<MangaChapter> {

@@ -39,6 +39,24 @@ public class SeriesActivity extends BaseActivity {
     };
 
     @Override
+    protected void onJobRequestStart(final String action) {
+        if (!(mSeriesInfoFragment.handleJobRequestStart(action)
+                || mChapterListFragment.handleJobRequestStart(action))) {
+            // It doesn't belong to any of our fragments .. let's handle it ourselves
+
+        }
+    }
+
+    @Override
+    protected void onJobRequestFinish(final String action) {
+        if (!(mSeriesInfoFragment.handleJobRequestFinish(action)
+                || mChapterListFragment.handleJobRequestFinish(action))) {
+            // It doesn't belong to any of our fragments .. let's handle it ourselves
+
+        }
+    }
+
+    @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_series);

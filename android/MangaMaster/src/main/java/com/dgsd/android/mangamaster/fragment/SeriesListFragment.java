@@ -131,8 +131,7 @@ public class SeriesListFragment extends BaseFragment
         reload(LOADER_ID_SERIES, this);
 
         if (!mHasMadeInitialApiRequest) {
-//            mPullToRefreshLayout.setRefreshing(true);
-//            loadSeries(SERIES_REQUEST_LIMIT, 0, 0);
+            loadSeries(SERIES_REQUEST_LIMIT, 0, 0);
             mHasMadeInitialApiRequest = true;
         }
     }
@@ -168,7 +167,7 @@ public class SeriesListFragment extends BaseFragment
     }
 
     private void loadSeries(int limit, int offset, long since) {
-        GetSeriesListJob job = new GetSeriesListJob(limit, offset, since);
+        final GetSeriesListJob job = new GetSeriesListJob(limit, offset, since);
         if (offset == 0) {
             mCurrentRefreshFromTopToken = job.getToken();
             registerForJob(mCurrentRefreshFromTopToken);

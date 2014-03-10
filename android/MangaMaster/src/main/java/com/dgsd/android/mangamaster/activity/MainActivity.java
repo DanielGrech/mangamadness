@@ -3,7 +3,6 @@ package com.dgsd.android.mangamaster.activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.ViewPager;
@@ -13,10 +12,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.dgsd.android.mangamaster.R;
 import com.dgsd.android.mangamaster.fragment.SeriesListFragment;
-import com.dgsd.android.mangamaster.jobs.GetSeriesListJob;
 import com.dgsd.android.mangamaster.util.EnumUtils;
 import com.dgsd.android.mangamaster.view.FragmentStatePagerAdapter;
-import com.path.android.jobqueue.JobManager;
 
 import javax.inject.Inject;
 
