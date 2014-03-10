@@ -18,6 +18,8 @@ import static com.dgsd.android.mangamaster.jobs.Constants.*;
  */
 public abstract class BaseJob extends Job {
 
+    private static final int DEFAULT_RETRY_ATTEMPTS = 3;
+
     protected static final int PRIORITY_LOW = 1;
     protected static final int PRIORITY_DEFAULT = 10;
     protected static final int PRIORITY_HIGH = 9000;
@@ -67,6 +69,11 @@ public abstract class BaseJob extends Job {
         // For example, if this was an Authentication exception,
         // there would be much point in continuing unless we re-authenticate
         return true;
+    }
+
+    @Override
+    protected int getRetryLimit() {
+        return BaseJob.DEFAULT_RETRY_ATTEMPTS;
     }
 
     private void sendStartBroadcast(String token) {

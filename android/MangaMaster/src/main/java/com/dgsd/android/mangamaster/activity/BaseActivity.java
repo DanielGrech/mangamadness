@@ -33,13 +33,11 @@ public abstract class BaseActivity extends Activity {
     private ApiBroadcastReceiver mApiReceiver = new ApiBroadcastReceiver() {
         @Override
         protected void onStart(final String token) {
-            setProgressBarIndeterminateVisibility(getRunningCounter() > 0);
             onJobRequestStart(token);
         }
 
         @Override
         protected void onFinish(final String token) {
-            setProgressBarIndeterminateVisibility(getRunningCounter() > 0);
             onJobRequestFinish(token);
         }
 
@@ -72,11 +70,11 @@ public abstract class BaseActivity extends Activity {
     }
 
     protected void onJobRequestStart(String action) {
-        //No-op
+        setProgressBarIndeterminateVisibility(mApiReceiver.getRunningCounter() > 0);
     }
 
     protected void onJobRequestFinish(String action) {
-        //No-op
+        setProgressBarIndeterminateVisibility(mApiReceiver.getRunningCounter() > 0);
     }
 
     protected void onJobRequestError(String action, String errorMsg) {

@@ -4,6 +4,7 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +22,16 @@ import com.dgsd.android.mangamaster.util.CollectionBaseAdapter;
 import com.dgsd.android.mangamaster.util.UiUtils;
 import com.dgsd.android.mangamaster.view.SeriesListItemView;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 import java.util.List;
 
 import static com.dgsd.android.mangamaster.data.SeriesLoader.Sort;
 
 public class SeriesListFragment extends BaseFragment
-        implements LoaderManager.LoaderCallbacks<List<MangaSeries>> {
+        implements LoaderManager.LoaderCallbacks<List<MangaSeries>>, OnRefreshListener {
 
     private static final int SERIES_REQUEST_LIMIT = 100;
 
@@ -44,7 +48,12 @@ public class SeriesListFragment extends BaseFragment
     @InjectView(R.id.list)
     ListView mList;
 
+    @InjectView(R.id.ptr_layout)
+    PullToRefreshLayout mPullToRefreshLayout;
+
     private SeriesListAdapter mAdapter;
+
+    private String mCurrentRefreshFromTopToken;
 
     private boolean mHasMadeInitialApiRequest;
 
@@ -59,6 +68,28 @@ public class SeriesListFragment extends BaseFragment
     }
 
     @Override
+    public boolean handleJobRequestStart(final String token) {
+        if (TextUtils.equals(token, mCurrentRefreshFromTopToken)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean handleJobRequestFinish(final String token) {
+        if (TextUtils.equals(token, mCurrentRefreshFromTopToken)) {
+            mCurrentRefreshFromTopToken = null;
+
+            mPullToRefreshLayout.setRefreshComplete();
+            mPullToRefreshLayout.setRefreshing(false);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
@@ -69,6 +100,12 @@ public class SeriesListFragment extends BaseFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.frag_series_list, container, false);
         ButterKnife.inject(this, v);
+
+        // Now setup the PullToRefreshLayout
+        ActionBarPullToRefresh.from(getActivity())
+                .allChildrenArePullable()
+                .listener(this)
+                .setup(mPullToRefreshLayout);
 
         if (Api.isMin(Api.KITKAT) && UiUtils.isPortrait(getActivity())
                 && !UiUtils.isTablet(getActivity())) {
@@ -94,7 +131,8 @@ public class SeriesListFragment extends BaseFragment
         reload(LOADER_ID_SERIES, this);
 
         if (!mHasMadeInitialApiRequest) {
-            loadSeries(SERIES_REQUEST_LIMIT, 0, 0);
+//            mPullToRefreshLayout.setRefreshing(true);
+//            loadSeries(SERIES_REQUEST_LIMIT, 0, 0);
             mHasMadeInitialApiRequest = true;
         }
     }
@@ -124,8 +162,19 @@ public class SeriesListFragment extends BaseFragment
         startActivity(intent);
     }
 
+    @Override
+    public void onRefreshStarted(final View view) {
+        loadSeries(SERIES_REQUEST_LIMIT, 0, 0);
+    }
+
     private void loadSeries(int limit, int offset, long since) {
-        mJobManager.addJobInBackground(new GetSeriesListJob(limit, offset, since));
+        GetSeriesListJob job = new GetSeriesListJob(limit, offset, since);
+        if (offset == 0) {
+            mCurrentRefreshFromTopToken = job.getToken();
+            registerForJob(mCurrentRefreshFromTopToken);
+        }
+
+        mJobManager.addJobInBackground(job);
     }
 
     private class SeriesListAdapter extends CollectionBaseAdapter<MangaSeries> {

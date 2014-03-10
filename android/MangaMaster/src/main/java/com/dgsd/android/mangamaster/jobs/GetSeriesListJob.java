@@ -12,8 +12,7 @@ public class GetSeriesListJob extends BaseJob {
     private final long mUpdatedSince;
 
     public GetSeriesListJob(int limit, int offset, long updatedSince) {
-        super(new Params(PRIORITY_DEFAULT)
-                .groupBy(GetSeriesListJob.class.getSimpleName()));
+        super(new Params(PRIORITY_DEFAULT));
 
         mLimit = limit;
         mOffset = offset;

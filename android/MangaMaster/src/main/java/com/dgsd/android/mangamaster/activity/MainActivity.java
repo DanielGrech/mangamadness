@@ -25,6 +25,10 @@ import javax.inject.Inject;
  */
 public class MainActivity extends BaseActivity {
 
+    private SeriesListFragment mFavouritesSeriesListFragment;
+    private SeriesListFragment mAlphaSeriesListFragment;
+    private SeriesListFragment mLatestSeriesListFragment;
+
     private static enum Page {
         ALPHA, LATEST, FAVOURITES
     }
@@ -48,6 +52,34 @@ public class MainActivity extends BaseActivity {
         setupViews();
         setupTintManagerForViews(true, false, ButterKnife.findById(this, R.id.drawer),
                 ButterKnife.findById(this, R.id.view_pager));
+
+        mAlphaSeriesListFragment
+                = SeriesListFragment.create(SeriesListFragment.DisplayType.ALPHA);
+        mLatestSeriesListFragment
+                = SeriesListFragment.create(SeriesListFragment.DisplayType.LATEST);
+        mFavouritesSeriesListFragment
+                = SeriesListFragment.create(SeriesListFragment.DisplayType.LATEST);
+    }
+
+
+    @Override
+    protected void onJobRequestStart(final String action) {
+        if (!(mAlphaSeriesListFragment.handleJobRequestStart(action)
+                || mLatestSeriesListFragment.handleJobRequestStart(action)
+                || mFavouritesSeriesListFragment.handleJobRequestStart(action))) {
+            // It doesn't belong to any of our fragments .. let's handle it ourselves
+
+        }
+    }
+
+    @Override
+    protected void onJobRequestFinish(final String action) {
+        if (!(mAlphaSeriesListFragment.handleJobRequestFinish(action)
+                || mLatestSeriesListFragment.handleJobRequestFinish(action)
+                || mFavouritesSeriesListFragment.handleJobRequestFinish(action))) {
+            // It doesn't belong to any of our fragments .. let's handle it ourselves
+
+        }
     }
 
     @Override
@@ -146,11 +178,11 @@ public class MainActivity extends BaseActivity {
         public Fragment getItem(final int position) {
             switch (EnumUtils.from(Page.class, position)) {
                 case ALPHA:
-                    return SeriesListFragment.create(SeriesListFragment.DisplayType.ALPHA);
+                    return mAlphaSeriesListFragment;
                 case LATEST:
-                    return SeriesListFragment.create(SeriesListFragment.DisplayType.LATEST);
+                    return mLatestSeriesListFragment;
                 case FAVOURITES:
-                    return SeriesListFragment.create(SeriesListFragment.DisplayType.LATEST);
+                    return mFavouritesSeriesListFragment;
                 default:
                     throw new IllegalStateException("Unexpected pager position: " + position);
             }

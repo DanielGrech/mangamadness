@@ -37,6 +37,18 @@ public abstract class BaseFragment extends Fragment {
         getBaseActivity().registerForJob(token);
     }
 
+    public boolean handleJobRequestStart(String token) {
+        return false;
+    }
+
+    public boolean handleJobRequestFinish(String token) {
+        return false;
+    }
+
+    public boolean handleJobRequestError(String token, String error) {
+        return false;
+    }
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

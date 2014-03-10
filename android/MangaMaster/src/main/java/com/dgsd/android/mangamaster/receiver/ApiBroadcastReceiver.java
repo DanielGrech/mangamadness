@@ -87,7 +87,7 @@ public abstract class ApiBroadcastReceiver extends BroadcastReceiver {
             switch (action) {
                 case ACTION_API_START:
                     mRunningCounter++;
-                    onStart(action);
+                    onStart(token);
                     break;
 
                 case ACTION_API_FINISH:
@@ -96,7 +96,7 @@ public abstract class ApiBroadcastReceiver extends BroadcastReceiver {
                         mRunningCounter = 0;
                     }
 
-                    onFinish(action);
+                    onFinish(token);
                     break;
 
                 case ACTION_API_ERROR:
@@ -105,7 +105,7 @@ public abstract class ApiBroadcastReceiver extends BroadcastReceiver {
                         errorMsg = context.getString(R.string.unknown_error);
                     }
 
-                    onError(action, errorMsg);
+                    onError(token, errorMsg);
 
                     break;
             }
@@ -115,7 +115,7 @@ public abstract class ApiBroadcastReceiver extends BroadcastReceiver {
     /**
      * @return The number of currently executing requests
      */
-    protected int getRunningCounter() {
+    public int getRunningCounter() {
         return mRunningCounter;
     }
 }
