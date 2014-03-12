@@ -37,6 +37,12 @@ public class Db extends SQLiteOpenHelper {
     }
 
     @Override
+    public void onConfigure(final SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.execSQL("PRAGMA synchronous=OFF");
+    }
+
+    @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         //TODO: Support db upgrade...
         throw new IllegalStateException("We havent implemented db upgrades yet!");
@@ -132,9 +138,10 @@ public class Db extends SQLiteOpenHelper {
                         Field.YEAR_OF_RELEASE,
                         Field.TIME_CREATED
                 )
-                .scripts("CREATE UNIQUE INDEX unique_server_id ON series (" +
-                        Field.SERIES_ID +
-                        ")")
+                .scripts(
+                        "CREATE UNIQUE INDEX unique_server_id ON series (" + Field.SERIES_ID + ")",
+                        "CREATE INDEX idx_series_server_id ON series (" + Field.SERIES_ID + ")"
+                )
                 .create();
 
         public static DbTable GENRES = DbTable.with("genres")
@@ -142,10 +149,11 @@ public class Db extends SQLiteOpenHelper {
                         Field.SERIES_ID,
                         Field.NAME
                 )
-                .scripts("CREATE UNIQUE INDEX unique_genre_server_id ON series (" +
-                        Field.SERIES_ID + ", " +
-                        Field.NAME +
-                        ")")
+                .scripts(
+                        "CREATE UNIQUE INDEX unique_genre_server_id ON genres (" + Field.SERIES_ID + ", " +
+                                "" + Field.NAME + ")",
+                        "CREATE INDEX idx_genre_series_id ON genres (" + Field.SERIES_ID + ")"
+                )
                 .create();
 
         public static DbTable CHAPTERS = DbTable.with("chapters")
@@ -159,9 +167,11 @@ public class Db extends SQLiteOpenHelper {
                         Field.RELEASE_DATE,
                         Field.TIME_CREATED
                 )
-                .scripts("CREATE UNIQUE INDEX unique_chapter_id ON chapters (" +
-                        Field.CHAPTER_ID +
-                        ")")
+                .scripts(
+                        "CREATE UNIQUE INDEX unique_chapter_id ON chapters (" + Field.CHAPTER_ID + ")",
+                        "CREATE INDEX idx_chapter_server_id ON series (" + Field.CHAPTER_ID + ")",
+                        "CREATE INDEX idx_chapter_series_id ON series (" + Field.SERIES_ID + ")"
+                )
                 .create();
 
         public static DbTable PAGES = DbTable.with("pages")
@@ -173,12 +183,10 @@ public class Db extends SQLiteOpenHelper {
                         Field.IMAGE_URL,
                         Field.TIME_CREATED
                 )
-                .scripts("CREATE UNIQUE INDEX unique_page_id ON pages (" +
-                        Field.PAGE_ID +
-                        ")",
-
-                        "CREATE INDEX idx_chapter_id ON pages (" +
-                        Field.CHAPTER_ID + ")")
+                .scripts(
+                        "CREATE UNIQUE INDEX unique_page_id ON pages (" + Field.PAGE_ID + ")",
+                        "CREATE INDEX idx_pages_chapter_id ON pages (" + Field.CHAPTER_ID + ")"
+                )
                 .create();
     }
 }
