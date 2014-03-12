@@ -33,7 +33,7 @@ import static com.dgsd.android.mangamaster.data.SeriesLoader.Sort;
 public class SeriesListFragment extends BaseFragment
         implements LoaderManager.LoaderCallbacks<List<MangaSeries>>, OnRefreshListener {
 
-    private static final int SERIES_REQUEST_LIMIT = 100;
+    private static final int SERIES_REQUEST_LIMIT = 500;
 
     public static enum DisplayType {
         ALPHA, LATEST

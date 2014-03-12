@@ -13,7 +13,9 @@ import com.dgsd.android.mangamaster.util.ContentValuesBuilder;
 import com.dgsd.android.mangamaster.util.DaoUtils;
 
 import javax.inject.Inject;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Default implementation of
@@ -33,19 +35,30 @@ public class PersistenceManager implements IPersistenceManager {
     @Override
     public void saveSeries(final List<MangaSeries> series) {
         if (series != null && !series.isEmpty()) {
-            for (MangaSeries s : series) {
-                mContentResolver.insert(MMContentProvider.SERIES_URI,
-                        DaoUtils.convert(s));
+            ContentValues[] seriesValues = new ContentValues[series.size()];
+            List<ContentValues> genreValues = new LinkedList<>();
+
+            for (int i = 0, size = series.size(); i < size; i++) {
+                final MangaSeries s = series.get(i);
+                seriesValues[i] = DaoUtils.convert(s);
 
                 if (s.hasGenres()) {
                     for (String genre : s.getGenres()) {
-                        final ContentValues values = new ContentValuesBuilder()
+                        genreValues.add(new ContentValuesBuilder()
                                 .put(Db.Field.SERIES_ID.getName(), s.getSeriesId())
                                 .put(Db.Field.NAME.getName(), genre)
-                                .build();
-                        mContentResolver.insert(MMContentProvider.SERIES_GENRE_URI, values);
+                                .build());
                     }
                 }
+            }
+
+            mContentResolver.bulkInsert(MMContentProvider.SERIES_URI, seriesValues);
+
+            if (!genreValues.isEmpty()) {
+                ContentValues[] values = new ContentValues[genreValues.size()];
+                genreValues.toArray(values);
+
+                mContentResolver.bulkInsert(MMContentProvider.SERIES_GENRE_URI, values);
             }
 
             notify(SeriesLoader.CONTENT_URI);
@@ -55,11 +68,12 @@ public class PersistenceManager implements IPersistenceManager {
     @Override
     public void saveChapters(final List<MangaChapter> chapters) {
         if (chapters != null && !chapters.isEmpty()) {
-            for (MangaChapter c : chapters) {
-                mContentResolver.insert(MMContentProvider.CHAPTERS_URI,
-                        DaoUtils.convert(c));
+            ContentValues[] values = new ContentValues[chapters.size()];
+            for (int i = 0, size = chapters.size(); i < size; i++) {
+                values[i] = DaoUtils.convert(chapters.get(i));
             }
 
+            mContentResolver.bulkInsert(MMContentProvider.CHAPTERS_URI, values);
             notify(ChapterLoader.CONTENT_URI);
         }
     }
@@ -67,11 +81,13 @@ public class PersistenceManager implements IPersistenceManager {
     @Override
     public void savePages(final List<MangaPage> pages) {
         if (pages != null && !pages.isEmpty()) {
-            for (MangaPage p : pages) {
-                mContentResolver.insert(MMContentProvider.PAGES_URI,
-                        DaoUtils.convert(p));
+            ContentValues[] values = new ContentValues[pages.size()];
+            for (int i = 0, size = pages.size(); i < size; i++) {
+                MangaPage page = pages.get(i);
+                values[i] = DaoUtils.convert(page);
             }
 
+            mContentResolver.bulkInsert(MMContentProvider.PAGES_URI, values);
             notify(PageLoader.CONTENT_URI);
         }
     }

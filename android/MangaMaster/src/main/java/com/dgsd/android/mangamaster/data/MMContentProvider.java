@@ -144,6 +144,43 @@ public class MMContentProvider extends ContentProvider {
         return 0;
     }
 
+    @Override
+    public int bulkInsert(final Uri uri, final ContentValues[] values) {
+        final SQLiteDatabase db = mDb.getWritableDatabase();
+
+        final int type = sURIMatcher.match(uri);
+        final DbTable table = getTableFromType(type);
+        final DbField[] upsertFields = getUpsertFieldsFromType(type);
+
+        int numInserted = 0;
+        try {
+            db.beginTransaction();
+
+            for (ContentValues v : values) {
+                final long id;
+                if (upsertFields == null || upsertFields.length == 0) {
+                    id = db.replaceOrThrow(table.getName(), null, v);
+                } else {
+                    id = ProviderUtils.upsert(db, table, v, upsertFields);
+                }
+
+                if (id > 0) {
+                    numInserted++;
+                }
+            }
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Timber.e(e, "Error inserting into database");
+        } finally {
+            db.endTransaction();
+        }
+
+        mContentResolver.notifyChange(uri, null);
+
+        return numInserted;
+    }
+
     private DbField[] getUpsertFieldsFromType(int type) {
         switch (type) {
             case TYPE_SERIES:
