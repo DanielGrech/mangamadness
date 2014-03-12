@@ -6,10 +6,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <com.dgsd.android.mangamaster.view.FadeInListView
+    <com.dgsd.android.mangamaster.view.EndlessListView
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fastScrollEnabled="true"
             android:scrollbarStyle="outsideOverlay"/>
 
 </uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout>

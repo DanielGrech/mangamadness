@@ -71,6 +71,7 @@ public class SeriesListFragment extends BaseFragment
     public boolean onJobRequestStart(final String token) {
         if (isRegisteredForJob(token)) {
             mPullToRefreshLayout.setRefreshing(true);
+            return true;
         }
 
         return false;

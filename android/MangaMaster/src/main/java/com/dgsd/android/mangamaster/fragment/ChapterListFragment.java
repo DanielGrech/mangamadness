@@ -21,6 +21,8 @@ import com.dgsd.android.mangamaster.model.MangaChapter;
 import com.dgsd.android.mangamaster.model.MangaSeries;
 import com.dgsd.android.mangamaster.util.CollectionBaseAdapter;
 import com.dgsd.android.mangamaster.view.ChapterListItemView;
+import com.dgsd.android.mangamaster.view.EndlessListView;
+import com.dgsd.android.mangamaster.view.EndlessListViewHelper;
 import com.dgsd.android.mangamaster.view.SlidePanel;
 import com.path.android.jobqueue.JobManager;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
@@ -33,7 +35,9 @@ import java.util.List;
 /**
  *
  */
-public class ChapterListFragment extends BaseFragment implements SlidePanel, OnRefreshListener {
+public class ChapterListFragment extends BaseFragment implements SlidePanel, OnRefreshListener, EndlessListViewHelper.OnEndReachedListener {
+
+    private static final float PARALLAX_FACTOR = 3f;
 
     private static final int CHAPTER_REQUEST_LIMIT = 500;
 
@@ -51,13 +55,11 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel, OnR
     PullToRefreshLayout mPullToRefreshLayout;
 
     @InjectView(R.id.list)
-    ListView mList;
+    EndlessListView mList;
 
     private ChapterListAdapter mAdapter;
 
     private boolean mHasMadeInitialApiRequest;
-
-    private String mCurrentRefreshFromTopToken;
 
     private LoaderManager.LoaderCallbacks<List<MangaChapter>> mChapterLoader
             = new LoaderManager.LoaderCallbacks<List<MangaChapter>>() {
@@ -103,8 +105,9 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel, OnR
     };
 
     @Override
-    public boolean handleJobRequestStart(final String token) {
-        if (TextUtils.equals(token, mCurrentRefreshFromTopToken)) {
+    public boolean onJobRequestStart(final String token) {
+        if (isRegisteredForJob(token)) {
+            mPullToRefreshLayout.setRefreshing(true);
             return true;
         }
 
@@ -112,10 +115,8 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel, OnR
     }
 
     @Override
-    public boolean handleJobRequestFinish(final String token) {
-        if (TextUtils.equals(token, mCurrentRefreshFromTopToken)) {
-            mCurrentRefreshFromTopToken = null;
-
+    public boolean onJobRequestFinish(final String token) {
+        if (isRegisteredForJob(token)) {
             mPullToRefreshLayout.setRefreshComplete();
             mPullToRefreshLayout.setRefreshing(false);
             return true;
@@ -143,6 +144,7 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel, OnR
 
         mAdapter = new ChapterListAdapter();
         mList.setAdapter(mAdapter);
+        mList.setOnEndReachedListener(this);
 
         return v;
     }
@@ -168,11 +170,7 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel, OnR
 
             final GetChapterListJob job
                     = new GetChapterListJob(mSeries.getUrlSegment(), limit, offset, since);
-
-            if (offset == 0) {
-                mCurrentRefreshFromTopToken = job.getToken();
-                registerForJob(mCurrentRefreshFromTopToken);
-            }
+            registerForJob(job.getToken());
 
             mJobManager.addJobInBackground(job);
         }
@@ -193,12 +191,17 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel, OnR
 
     @Override
     public void onPanelSlide(final float offset) {
-
+        mList.setTranslationY(((1f - offset) * -mList.getHeight()) / PARALLAX_FACTOR);
     }
 
     @Override
     public void onRefreshStarted(final View view) {
         loadChapters(CHAPTER_REQUEST_LIMIT, 0, 0);
+    }
+
+    @Override
+    public void onEndReached(final ListView lv) {
+        loadChapters(CHAPTER_REQUEST_LIMIT, mAdapter.getCount(), 0);
     }
 
     private class ChapterListAdapter extends CollectionBaseAdapter<MangaChapter> {
