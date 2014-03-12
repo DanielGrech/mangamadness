@@ -63,7 +63,7 @@ public class ChapterListFragment extends BaseFragment implements SlidePanel, OnR
             = new LoaderManager.LoaderCallbacks<List<MangaChapter>>() {
         @Override
         public Loader<List<MangaChapter>> onCreateLoader(final int id, final Bundle args) {
-            return new ChapterLoader(getActivity(), mSeriesId);
+            return ChapterLoader.createWithSeriesId(getActivity(), mSeriesId);
         }
 
         @Override

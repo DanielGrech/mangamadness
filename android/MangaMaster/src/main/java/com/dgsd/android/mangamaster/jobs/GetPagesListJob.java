@@ -7,19 +7,17 @@ import com.path.android.jobqueue.Params;
  */
 public class GetPagesListJob extends BaseJob {
 
-    private final String mSeries;
-    private final int mChapter;
+    private final String mChapterId;
 
-    public GetPagesListJob(String series, int chapter) {
+    public GetPagesListJob(String chapterId) {
         super(new Params(PRIORITY_DEFAULT)
-                .groupBy(GetPagesListJob.class.getSimpleName() + series + chapter));
+                .groupBy(GetPagesListJob.class.getSimpleName() + chapterId));
 
-        mSeries = series;
-        mChapter = chapter;
+        mChapterId = chapterId;
     }
 
     @Override
     protected void runJob() {
-        mApiManager.getPagesInChapter(mSeries, mChapter);
+        mApiManager.getPagesInChapter(mChapterId);
     }
 }

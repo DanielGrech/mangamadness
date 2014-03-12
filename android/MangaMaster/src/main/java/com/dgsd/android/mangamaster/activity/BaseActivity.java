@@ -2,6 +2,8 @@ package com.dgsd.android.mangamaster.activity;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
@@ -97,6 +99,15 @@ public abstract class BaseActivity extends Activity {
      */
     protected <T extends Fragment> T findFragment(int id) {
         return (T) getFragmentManager().findFragmentById(id);
+    }
+
+    protected void reload(int loaderId, LoaderManager.LoaderCallbacks callbacks) {
+        final Loader loader = getLoaderManager().getLoader(loaderId);
+        if (loader == null) {
+            getLoaderManager().initLoader(loaderId, null, callbacks);
+        } else {
+            getLoaderManager().restartLoader(loaderId, null, callbacks);
+        }
     }
 
     protected void setupTintManagerForViews(boolean clipTop, boolean clipBottom, View... views) {

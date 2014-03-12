@@ -7,4 +7,5 @@
     <dimen name="series_panel_height">72dp</dimen>
     <dimen name="series_panel_image_height">200dp</dimen>
     <dimen name="list_section_divider_min_height">32dip</dimen>
+    <dimen name="photo_view_pager_page_margin">32dp</dimen>
 </resources>

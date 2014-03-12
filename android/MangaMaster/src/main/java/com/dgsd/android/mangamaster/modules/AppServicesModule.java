@@ -6,10 +6,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import com.dgsd.android.mangamaster.BuildConfig;
 import com.dgsd.android.mangamaster.MMApp;
 import com.dgsd.android.mangamaster.activity.*;
-import com.dgsd.android.mangamaster.fragment.ChapterListFragment;
-import com.dgsd.android.mangamaster.fragment.LoginChoiceFragment;
-import com.dgsd.android.mangamaster.fragment.SeriesInfoFragment;
-import com.dgsd.android.mangamaster.fragment.SeriesListFragment;
+import com.dgsd.android.mangamaster.fragment.*;
 import com.dgsd.android.mangamaster.jobs.GetChapterListJob;
 import com.dgsd.android.mangamaster.jobs.GetPagesListJob;
 import com.dgsd.android.mangamaster.jobs.GetSeriesListJob;
@@ -45,6 +42,7 @@ import javax.inject.Singleton;
                 SeriesListFragment.class,
                 SeriesInfoFragment.class,
                 ChapterListFragment.class,
+                PageFragment.class,
 
                 // Jobs
                 GetSeriesListJob.class,

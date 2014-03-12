@@ -54,4 +54,15 @@ public class ApiManager implements IApiManager {
             mPersistenceManager.savePages(results.getPages());
         }
     }
+
+    @Override
+    public void getPagesInChapter(final String chapterId) {
+        PageListRequest results = mMMApi.getPages(chapterId);
+
+        Timber.d("Got pages %s", results);
+
+        if (results != null && results.hasPages()) {
+            mPersistenceManager.savePages(results.getPages());
+        }
+    }
 }

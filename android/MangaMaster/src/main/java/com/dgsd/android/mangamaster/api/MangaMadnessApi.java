@@ -26,4 +26,7 @@ public interface MangaMadnessApi {
     @GET("/series/{series}/chapters/{chapter}")
     public PageListRequest getPages(@Path("series") String series,
                                     @Path("chapter") int chapter);
+
+    @GET("/chapters/{chapter}")
+    public PageListRequest getPages(@Path("chapter") String chapterId);
 }

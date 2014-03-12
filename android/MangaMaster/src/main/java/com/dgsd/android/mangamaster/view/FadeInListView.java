@@ -22,10 +22,10 @@ public class FadeInListView extends ListView {
     }
 
     {
-        final AlphaAnimation alpha = new AlphaAnimation(0.2f, 1f);
+        final AlphaAnimation alpha = new AlphaAnimation(0f, 1f);
         alpha.setInterpolator(new DecelerateInterpolator());
-        alpha.setDuration(100);
+        alpha.setDuration(500);
 
-        setLayoutAnimation(new LayoutAnimationController(alpha));
+        setLayoutAnimation(new LayoutAnimationController(alpha, 0.0f));
     }
 }

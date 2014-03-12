@@ -12,4 +12,6 @@ public interface IApiManager {
     public void getChaptersInSeries(String series, int limit, int offset, long updatedSince);
 
     public void getPagesInChapter(String series, int chapter);
+
+    public void getPagesInChapter(String chapterId);
 }

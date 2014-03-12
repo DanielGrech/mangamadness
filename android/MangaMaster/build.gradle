@@ -69,6 +69,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.+'
     compile 'com.path:android-priority-jobqueue:1.1.+'
     compile 'com.github.chrisbanes.actionbarpulltorefresh:library:0.9.3'
+    compile 'com.github.chrisbanes.photoview:library:1.2.2'
     compile('de.keyboardsurfer.android.widget:crouton:1.8.3') {
         // exclusion is not neccessary, but generally a good idea.
         exclude group: 'com.google.android', module: 'support-v4'
