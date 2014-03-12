@@ -81,7 +81,7 @@ func GetChapterList(db *mgo.Database, series_name string, offset int, limit int,
 			"series_id" : series.Id,
 			"time_created"		: bson.M{"$gte" : update_since},
 		}
-		c.Find(query).Limit(limit).Skip(offset).Sort("sequence_number").All(&chapters)
+		c.Find(query).Limit(limit).Skip(offset).Sort("-sequence_number").All(&chapters)
 	}
 
 	return
