@@ -63,7 +63,7 @@ public class PageFragment extends BaseFragment implements PhotoViewAttacher.OnVi
         Ion.with(getActivity())
                 .load(mPage.getImageUrl())
                 .withBitmap()
-//                .deepZoom()
+                .deepZoom()
                 .intoImageView(mImage);
 
         return v;
