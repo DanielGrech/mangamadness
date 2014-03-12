@@ -40,8 +40,8 @@ public class SeriesActivity extends BaseActivity {
 
     @Override
     protected void onJobRequestStart(final String action) {
-        if (!(mSeriesInfoFragment.handleJobRequestStart(action)
-                || mChapterListFragment.handleJobRequestStart(action))) {
+        if (!(mSeriesInfoFragment.onJobRequestStart(action)
+                || mChapterListFragment.onJobRequestStart(action))) {
             // It doesn't belong to any of our fragments .. let's handle it ourselves
 
         }
@@ -49,8 +49,8 @@ public class SeriesActivity extends BaseActivity {
 
     @Override
     protected void onJobRequestFinish(final String action) {
-        if (!(mSeriesInfoFragment.handleJobRequestFinish(action)
-                || mChapterListFragment.handleJobRequestFinish(action))) {
+        if (!(mSeriesInfoFragment.onJobRequestFinish(action)
+                || mChapterListFragment.onJobRequestFinish(action))) {
             // It doesn't belong to any of our fragments .. let's handle it ourselves
 
         }

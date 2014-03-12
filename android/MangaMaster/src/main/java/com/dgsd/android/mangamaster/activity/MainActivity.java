@@ -15,8 +15,6 @@ import com.dgsd.android.mangamaster.fragment.SeriesListFragment;
 import com.dgsd.android.mangamaster.util.EnumUtils;
 import com.dgsd.android.mangamaster.view.FragmentStatePagerAdapter;
 
-import javax.inject.Inject;
-
 /**
  *
  */
@@ -61,9 +59,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onJobRequestStart(final String action) {
-        if (!(mAlphaSeriesListFragment.handleJobRequestStart(action)
-                || mLatestSeriesListFragment.handleJobRequestStart(action)
-                || mFavouritesSeriesListFragment.handleJobRequestStart(action))) {
+        if (!(mAlphaSeriesListFragment.onJobRequestStart(action)
+                || mLatestSeriesListFragment.onJobRequestStart(action)
+                || mFavouritesSeriesListFragment.onJobRequestStart(action))) {
             // It doesn't belong to any of our fragments .. let's handle it ourselves
 
         }
@@ -71,9 +69,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onJobRequestFinish(final String action) {
-        if (!(mAlphaSeriesListFragment.handleJobRequestFinish(action)
-                || mLatestSeriesListFragment.handleJobRequestFinish(action)
-                || mFavouritesSeriesListFragment.handleJobRequestFinish(action))) {
+        if (!(mAlphaSeriesListFragment.onJobRequestFinish(action)
+                || mLatestSeriesListFragment.onJobRequestFinish(action)
+                || mFavouritesSeriesListFragment.onJobRequestFinish(action))) {
             // It doesn't belong to any of our fragments .. let's handle it ourselves
 
         }

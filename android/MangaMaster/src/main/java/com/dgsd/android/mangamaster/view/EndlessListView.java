@@ -2,52 +2,42 @@ package com.dgsd.android.mangamaster.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.AbsListView;
+import android.widget.ListAdapter;
 
-/**
- *
- */
-public class EndlessListView extends FadeInListView implements AbsListView.OnScrollListener {
+public class EndlessListView extends FadeInListView {
 
-    private boolean mIsPullToRefreshEnabled;
+    private EndlessListViewHelper mEndlessHelper;
 
-    public EndlessListView(final Context context) {
+    public EndlessListView(Context context) {
         super(context);
     }
 
-    public EndlessListView(final Context context, final AttributeSet attrs) {
+    public EndlessListView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public EndlessListView(final Context context, final AttributeSet attrs, final int defStyle) {
+    public EndlessListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
     {
-        mIsPullToRefreshEnabled = true;
-        setOnScrollListener(this);
+        mEndlessHelper = new EndlessListViewHelper(this);
     }
 
     @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-
+    public void setAdapter(ListAdapter adapter) {
+        mEndlessHelper.onPreSetAdapter(adapter);
+        super.setAdapter(adapter);
+        mEndlessHelper.onPostSetAdapter(adapter);
     }
 
     @Override
-    public void onScroll(final AbsListView view, int firstVisibleItem,
-                         int visibleItemCount, int totalItemCount) {
-
+    protected void onDetachedFromWindow() {
+        mEndlessHelper.onDetachedFromWindow();
+        super.onDetachedFromWindow();
     }
 
-    public boolean isPullToRefreshEnabled() {
-        return mIsPullToRefreshEnabled;
-    }
-
-    public void setPullToRefreshEnabled(final boolean isPullToRefreshEnabled) {
-        mIsPullToRefreshEnabled = isPullToRefreshEnabled;
-    }
-
-    public interface OnEndlessScrollListener {
-        public void onScrolledToEnd(EndlessListView view);
+    public void setOnEndReachedListener(EndlessListViewHelper.OnEndReachedListener listener) {
+        mEndlessHelper.setOnEndReachedListener(listener);
     }
 }

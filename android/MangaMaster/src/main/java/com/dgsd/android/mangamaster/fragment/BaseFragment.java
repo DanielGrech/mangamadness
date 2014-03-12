@@ -12,6 +12,8 @@ import com.path.android.jobqueue.JobManager;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Base class for all fragments in the app
@@ -24,6 +26,8 @@ public abstract class BaseFragment extends Fragment {
     @Inject
     JobManager mJobManager;
 
+    private Set<String> mAcceptableJobTokens = new HashSet<>();
+
     @Override
     public void onAttach(final Activity activity) {
         if ( !(activity instanceof BaseActivity)) {
@@ -34,19 +38,24 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void registerForJob(String token) {
+        mAcceptableJobTokens.add(token);
         getBaseActivity().registerForJob(token);
     }
 
-    public boolean handleJobRequestStart(String token) {
-        return false;
+    public boolean onJobRequestStart(String token) {
+        return isRegisteredForJob(token);
     }
 
-    public boolean handleJobRequestFinish(String token) {
-        return false;
+    public boolean onJobRequestFinish(String token) {
+        return isRegisteredForJob(token);
     }
 
-    public boolean handleJobRequestError(String token, String error) {
-        return false;
+    public boolean onJobRequestError(String token, String error) {
+        return isRegisteredForJob(token);
+    }
+
+    protected boolean isRegisteredForJob(String token) {
+        return mAcceptableJobTokens.contains(token);
     }
 
     @Override

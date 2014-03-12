@@ -20,6 +20,8 @@ import com.dgsd.android.mangamaster.model.MangaSeries;
 import com.dgsd.android.mangamaster.util.Api;
 import com.dgsd.android.mangamaster.util.CollectionBaseAdapter;
 import com.dgsd.android.mangamaster.util.UiUtils;
+import com.dgsd.android.mangamaster.view.EndlessListView;
+import com.dgsd.android.mangamaster.view.EndlessListViewHelper;
 import com.dgsd.android.mangamaster.view.SeriesListItemView;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
@@ -31,7 +33,7 @@ import java.util.List;
 import static com.dgsd.android.mangamaster.data.SeriesLoader.Sort;
 
 public class SeriesListFragment extends BaseFragment
-        implements LoaderManager.LoaderCallbacks<List<MangaSeries>>, OnRefreshListener {
+        implements LoaderManager.LoaderCallbacks<List<MangaSeries>>, OnRefreshListener, EndlessListViewHelper.OnEndReachedListener {
 
     private static final int SERIES_REQUEST_LIMIT = 500;
 
@@ -46,14 +48,12 @@ public class SeriesListFragment extends BaseFragment
     private DisplayType mDisplayType;
 
     @InjectView(R.id.list)
-    ListView mList;
+    EndlessListView mList;
 
     @InjectView(R.id.ptr_layout)
     PullToRefreshLayout mPullToRefreshLayout;
 
     private SeriesListAdapter mAdapter;
-
-    private String mCurrentRefreshFromTopToken;
 
     private boolean mHasMadeInitialApiRequest;
 
@@ -68,19 +68,17 @@ public class SeriesListFragment extends BaseFragment
     }
 
     @Override
-    public boolean handleJobRequestStart(final String token) {
-        if (TextUtils.equals(token, mCurrentRefreshFromTopToken)) {
-            return true;
+    public boolean onJobRequestStart(final String token) {
+        if (isRegisteredForJob(token)) {
+            mPullToRefreshLayout.setRefreshing(true);
         }
 
         return false;
     }
 
     @Override
-    public boolean handleJobRequestFinish(final String token) {
-        if (TextUtils.equals(token, mCurrentRefreshFromTopToken)) {
-            mCurrentRefreshFromTopToken = null;
-
+    public boolean onJobRequestFinish(final String token) {
+        if (isRegisteredForJob(token)) {
             mPullToRefreshLayout.setRefreshComplete();
             mPullToRefreshLayout.setRefreshing(false);
             return true;
@@ -121,6 +119,7 @@ public class SeriesListFragment extends BaseFragment
 
         mAdapter = new SeriesListAdapter();
         mList.setAdapter(mAdapter);
+        mList.setOnEndReachedListener(this);
 
         return v;
     }
@@ -166,13 +165,14 @@ public class SeriesListFragment extends BaseFragment
         loadSeries(SERIES_REQUEST_LIMIT, 0, 0);
     }
 
+    @Override
+    public void onEndReached(final ListView lv) {
+        loadSeries(SERIES_REQUEST_LIMIT, mAdapter.getCount(), 0);
+    }
+
     private void loadSeries(int limit, int offset, long since) {
         final GetSeriesListJob job = new GetSeriesListJob(limit, offset, since);
-        if (offset == 0) {
-            mCurrentRefreshFromTopToken = job.getToken();
-            registerForJob(mCurrentRefreshFromTopToken);
-        }
-
+        registerForJob(job.getToken());
         mJobManager.addJobInBackground(job);
     }
 
