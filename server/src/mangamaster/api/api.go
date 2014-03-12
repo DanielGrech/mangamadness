@@ -144,6 +144,7 @@ func GetChapter(params martini.Params, render render.Render, db *mgo.Database) {
 
 	result := common.GetPagesInChapter(db, chapter_id)
 	response := map[string]interface{}{}
+	response["chapter_id"] = chapter_id
 
 	if result == nil {
 		response["result"] = EMPTY_JSON_ARRAY
