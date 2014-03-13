@@ -22,4 +22,7 @@
     <string name="my_manga">My Manga</string>
     <string name="series">Series</string>
     <string name="downloads">Downloads</string>
+    <string name="latest_manga">Latest Manga</string>
+    <string name="all_manga">All Manga</string>
+    <string name="favourite_manga">Favourite Manga</string>
 </resources>

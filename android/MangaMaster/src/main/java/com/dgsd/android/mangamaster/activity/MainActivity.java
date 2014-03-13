@@ -154,12 +154,10 @@ public class MainActivity extends BaseActivity {
                 R.drawable.ic_drawer, R.string.drawer_open, R.string.drawer_close) {
 
             public void onDrawerClosed(View view) {
-                getActionBar().setTitle(R.string.app_name);
                 invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View drawerView) {
-                getActionBar().setTitle(R.string.app_name);
                 invalidateOptionsMenu();
             }
         };
@@ -184,6 +182,8 @@ public class MainActivity extends BaseActivity {
             if (mCurrentState == state) {
                 return;
             }
+
+            setTitleForState(state);
 
             final String stateName = String.valueOf(state);
 
@@ -222,10 +222,32 @@ public class MainActivity extends BaseActivity {
 
             trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             trans.commit();
+
+
         }
 
         public int getState() {
             return mCurrentState;
+        }
+
+        private void setTitleForState(int state) {
+            final int abTitleRes;
+
+            switch (state) {
+                case STATE_FAVOURITES:
+                    abTitleRes = R.string.favourite_manga;
+                    break;
+                case STATE_ALL:
+                    abTitleRes = R.string.all_manga;
+                    break;
+                case STATE_LATEST:
+                    abTitleRes = R.string.latest_manga;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unrecognized state: " + state);
+            }
+
+            getActionBar().setTitle(abTitleRes);
         }
 
         @Override
@@ -237,6 +259,7 @@ public class MainActivity extends BaseActivity {
                     throw new IllegalStateException("Unexpected fragment tag: " + tag);
                 } else {
                     mCurrentState = Integer.valueOf(tag);
+                    setTitleForState(mCurrentState);
                 }
             }
         }
