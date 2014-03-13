@@ -72,6 +72,10 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="SmallTitleTextViewStyle.Light">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <style name="SeriesInfoText">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -80,5 +84,23 @@
         <item name="android:paddingTop">4dp</item>
         <item name="android:textSize">17sp</item>
         <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="AppDrawer" />
+
+    <style name="AppDrawer.Title" parent="SmallTitleTextViewStyle.Light">
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+    </style>
+
+    <style name="AppDrawer.ListItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?android:attr/listPreferredItemHeight</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:paddingLeft">@dimen/default_padding</item>
+        <item name="android:paddingRight">@dimen/default_padding</item>
+        <item name="android:clickable">true</item>
     </style>
 </resources>

@@ -2,39 +2,39 @@ package com.dgsd.android.mangamaster.activity;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 import android.view.*;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.dgsd.android.mangamaster.R;
+import com.dgsd.android.mangamaster.fragment.AppDrawerFragment;
+import com.dgsd.android.mangamaster.fragment.FavouritesFragment;
 import com.dgsd.android.mangamaster.fragment.SeriesListFragment;
-import com.dgsd.android.mangamaster.util.EnumUtils;
-import com.dgsd.android.mangamaster.view.FragmentStatePagerAdapter;
+import com.squareup.otto.Subscribe;
 
 /**
  *
  */
 public class MainActivity extends BaseActivity {
 
-    private SeriesListFragment mFavouritesSeriesListFragment;
-    private SeriesListFragment mAlphaSeriesListFragment;
-    private SeriesListFragment mLatestSeriesListFragment;
+    private static final int STATE_NONE = 0;
+    private static final int STATE_FAVOURITES = 1;
+    private static final int STATE_ALL = 2;
+    private static final int STATE_LATEST = 3;
 
-    private static enum Page {
-        ALPHA, LATEST, FAVOURITES
-    }
+    private AppDrawerFragment mAppDrawerFragment;
 
     @InjectView(R.id.navigation_drawer)
     DrawerLayout mNavigationDrawer;
 
-    @InjectView(R.id.view_pager)
-    ViewPager mPager;
-
     ActionBarDrawerToggle mDrawerToggle;
+
+    private StateMachine mStateMachine;
 
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,35 +46,36 @@ public class MainActivity extends BaseActivity {
         setupNavigationDrawer();
         setupViews();
         setupTintManagerForViews(true, false, ButterKnife.findById(this, R.id.drawer),
-                ButterKnife.findById(this, R.id.view_pager));
+                ButterKnife.findById(this, R.id.fragment_container));
 
-        mAlphaSeriesListFragment
-                = SeriesListFragment.create(SeriesListFragment.DisplayType.ALPHA);
-        mLatestSeriesListFragment
-                = SeriesListFragment.create(SeriesListFragment.DisplayType.LATEST);
-        mFavouritesSeriesListFragment
-                = SeriesListFragment.create(SeriesListFragment.DisplayType.LATEST);
+        mStateMachine = new StateMachine();
+        getFragmentManager().addOnBackStackChangedListener(mStateMachine);
+
+        if (savedInstanceState == null) {
+            mStateMachine.transitionTo(STATE_FAVOURITES);
+        }
     }
 
 
     @Override
     protected void onJobRequestStart(final String action) {
-        if (!(mAlphaSeriesListFragment.onJobRequestStart(action)
-                || mLatestSeriesListFragment.onJobRequestStart(action)
-                || mFavouritesSeriesListFragment.onJobRequestStart(action))) {
+//        if (!mFavouritesFragment.onJobRequestStart(action)) {
             // It doesn't belong to any of our fragments .. let's handle it ourselves
 
-        }
+//        }
     }
 
     @Override
     protected void onJobRequestFinish(final String action) {
-        if (!(mAlphaSeriesListFragment.onJobRequestFinish(action)
-                || mLatestSeriesListFragment.onJobRequestFinish(action)
-                || mFavouritesSeriesListFragment.onJobRequestFinish(action))) {
+//        if (!mFavouritesFragment.onJobRequestStart(action)) {
             // It doesn't belong to any of our fragments .. let's handle it ourselves
+//        }
+    }
 
-        }
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
     }
 
     @Override
@@ -95,15 +96,15 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        getFragmentManager().removeOnBackStackChangedListener(mStateMachine);
     }
 
     @Override
@@ -125,6 +126,27 @@ public class MainActivity extends BaseActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onAppDrawerMenuItemPressed(AppDrawerFragment.OnAppDrawerItemClickEvent event) {
+        switch (event.item) {
+            case LATEST:
+                mStateMachine.transitionTo(STATE_LATEST);
+                break;
+            case ALL_SERIES:
+                mStateMachine.transitionTo(STATE_ALL);
+                break;
+            case FAVOURITES:
+                mStateMachine.transitionTo(STATE_FAVOURITES);
+                break;
+            case DOWNLOADS:
+                //TODO: Downloads!
+                break;
+        }
+
+        mNavigationDrawer.closeDrawers();
     }
 
     private void setupDrawerToggle() {
@@ -152,48 +174,70 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setupViews() {
-        mPager.setPageMargin(getResources().getDimensionPixelSize(R.dimen.main_pager_page_margin));
-        mPager.setAdapter(new PageAdapter(getFragmentManager()));
-        mPager.setOffscreenPageLimit(2);
-        mPager.setCurrentItem(Page.LATEST.ordinal());
+        mAppDrawerFragment = findFragment(R.id.drawer);
     }
 
-    private class PageAdapter extends FragmentStatePagerAdapter {
+    private class StateMachine implements FragmentManager.OnBackStackChangedListener {
+        private int mCurrentState = STATE_NONE;
 
-        public PageAdapter(final FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public int getCount() {
-            return Page.values().length;
-        }
-
-        @Override
-        public Fragment getItem(final int position) {
-            switch (EnumUtils.from(Page.class, position)) {
-                case ALPHA:
-                    return mAlphaSeriesListFragment;
-                case LATEST:
-                    return mLatestSeriesListFragment;
-                case FAVOURITES:
-                    return mFavouritesSeriesListFragment;
-                default:
-                    throw new IllegalStateException("Unexpected pager position: " + position);
+        public void transitionTo(int state) {
+            if (mCurrentState == state) {
+                return;
             }
+
+            final String stateName = String.valueOf(state);
+
+            final FragmentManager fm = getFragmentManager();
+
+            if (mCurrentState != STATE_NONE && fm.popBackStackImmediate(stateName, 0)) {
+                // We've in our new state
+                mCurrentState = state;
+                return;
+            }
+
+            final Fragment fragment;
+            switch (state) {
+                case STATE_NONE:
+                    throw new IllegalArgumentException("Cant move back to none state");
+                case STATE_FAVOURITES:
+                    fragment = new FavouritesFragment();
+                    break;
+                case STATE_ALL:
+                    fragment = SeriesListFragment.create(SeriesListFragment.DisplayType.ALPHA);
+                    break;
+                case STATE_LATEST:
+                    fragment = SeriesListFragment.create(SeriesListFragment.DisplayType.LATEST);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unrecognized state: " + state);
+            }
+
+            final FragmentTransaction trans = fm.beginTransaction();
+            trans.replace(R.id.fragment_container, fragment, stateName);
+            if (state > STATE_FAVOURITES) {
+                trans.addToBackStack(stateName);
+            } else {
+                mCurrentState = state;
+            }
+
+            trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            trans.commit();
+        }
+
+        public int getState() {
+            return mCurrentState;
         }
 
         @Override
-        public CharSequence getPageTitle(final int position) {
-            switch (EnumUtils.from(Page.class, position)) {
-                case ALPHA:
-                    return getString(R.string.all);
-                case LATEST:
-                    return getString(R.string.latest);
-                case FAVOURITES:
-                    return getString(R.string.favourites);
-                default:
-                    throw new IllegalStateException("Unexpected pager position: " + position);
+        public void onBackStackChanged() {
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.fragment_container);
+            if (fragment != null) {
+                String tag = fragment.getTag();
+                if (tag == null || !TextUtils.isDigitsOnly(tag)) {
+                    throw new IllegalStateException("Unexpected fragment tag: " + tag);
+                } else {
+                    mCurrentState = Integer.valueOf(tag);
+                }
             }
         }
     }

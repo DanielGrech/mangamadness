@@ -39,6 +39,8 @@ import javax.inject.Singleton;
 
                 // Fragments
                 LoginChoiceFragment.class,
+                AppDrawerFragment.class,
+                FavouritesFragment.class,
                 SeriesListFragment.class,
                 SeriesInfoFragment.class,
                 ChapterListFragment.class,

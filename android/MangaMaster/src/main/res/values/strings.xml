@@ -18,4 +18,8 @@
     <string name="summary">Summary</string>
     <string name="artist">Artist</string>
     <string name="genres">Genres</string>
+    <string name="all_series">All Series</string>
+    <string name="my_manga">My Manga</string>
+    <string name="series">Series</string>
+    <string name="downloads">Downloads</string>
 </resources>
