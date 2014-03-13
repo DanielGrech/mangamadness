@@ -106,6 +106,7 @@ public class ChapterActivity extends BaseActivity {
 
         mAdapter = new MangaPageAdapter(getFragmentManager());
         mViewPager.setAdapter(mAdapter);
+        mViewPager.setOffscreenPageLimit(4); //TODO: Adjust based on network connection...
 
         mChapterId = getIntent().getStringExtra(EXTRA_CHAPTER_ID);
         if (TextUtils.isEmpty(mChapterId)) {

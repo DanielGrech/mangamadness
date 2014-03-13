@@ -1,15 +1,21 @@
 package com.dgsd.android.mangamaster.fragment;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.dgsd.android.mangamaster.R;
 import com.dgsd.android.mangamaster.model.MangaPage;
+import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -21,8 +27,13 @@ public class PageFragment extends BaseFragment implements PhotoViewAttacher.OnVi
 
     private static final String KEY_PAGE = "_page";
 
+    private static DecelerateInterpolator sDecelerateInterpolator = new DecelerateInterpolator(1.5f);
+
     @InjectView(R.id.image)
     PhotoView mImage;
+
+    @InjectView(R.id.progress)
+    ProgressBar mProgressBar;
 
     private MangaPage mPage;
 
@@ -60,11 +71,21 @@ public class PageFragment extends BaseFragment implements PhotoViewAttacher.OnVi
         mImage.setMaximumScale(8f);
         mImage.setOnViewTapListener(this);
 
+        showProgressBar();
+
         Ion.with(getActivity())
                 .load(mPage.getImageUrl())
                 .withBitmap()
                 .deepZoom()
-                .intoImageView(mImage);
+//                .placeholder(R.drawable.page_placeholder)
+//                .error(R.drawable.page_error)
+                .intoImageView(mImage)
+                .setCallback(new FutureCallback<ImageView>() {
+                    @Override
+                    public void onCompleted(final Exception e, final ImageView imageView) {
+                        hideProgressBar();
+                    }
+                });
 
         return v;
     }
@@ -74,5 +95,43 @@ public class PageFragment extends BaseFragment implements PhotoViewAttacher.OnVi
         mEventBus.post(new PageClickEvent());
     }
 
-    public static class PageClickEvent {}
+    private void showProgressBar() {
+        if (mProgressBar == null) {
+            return;
+        }
+
+        mProgressBar.setScaleX(0f);
+        mProgressBar.setScaleY(0f);
+        mProgressBar.setAlpha(0f);
+
+        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.animate()
+                .scaleY(1f)
+                .scaleX(1f)
+                .alpha(1f)
+                .setInterpolator(sDecelerateInterpolator);
+    }
+
+    private void hideProgressBar() {
+        if (mProgressBar == null) {
+            return;
+        }
+
+        mProgressBar.animate()
+                .scaleY(0)
+                .scaleX(0)
+                .alpha(0)
+                .setInterpolator(sDecelerateInterpolator)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(final Animator animation) {
+                        if (mProgressBar != null) {
+                            mProgressBar.setVisibility(View.GONE);
+                        }
+                    }
+                });
+    }
+
+    public static class PageClickEvent {
+    }
 }
