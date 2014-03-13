@@ -3,11 +3,13 @@
 <com.dgsd.android.mangamaster.view.ChapterListItemView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="?android:attr/listPreferredItemHeight">
 
     <TextView
             android:id="@+id/primary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_centerVertical="true"
+            android:paddingLeft="@dimen/default_padding"
+            android:paddingRight="@dimen/default_padding"
+            style="@style/ListItem.PrimaryText"/>
 
 </com.dgsd.android.mangamaster.view.ChapterListItemView>

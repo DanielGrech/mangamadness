@@ -13,5 +13,6 @@
     <color name="facebook_sign_in_color_border">#4066AB</color>
     <color name="background_chapter_activity">#171920</color>
     <color name="background_app_drawer">#171920</color>
+    <color name="border_color">#E3E3E3</color>
 
 </resources>
