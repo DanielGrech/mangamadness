@@ -20,19 +20,56 @@ chapters_dom = sdb_conn.get_domain('chapters')
 pages_dom = sdb_conn.get_domain('pages')
 
 def clean_series(input):
-	return input
+	if input is not None and isinstance(input, dict):
+		retval = {}
+		retval["id"] = input["series_id"]
+		retval["name"] = input["name"]
+		retval["url_segment"] = input["url_segment"]
+		retval["artist"] = input["artist"]
+		retval["author"] = input["author"]
+		retval["cover_image_url"] = input["cover_image_url"]
+		retval["genres"] = input["genres"]
+		retval["year_of_release"] = int(input["year_of_release"])
+		retval["time_created"] = int(input["time_created"])
+
+		summary = ""
+		summary_part = 0
+		while True:
+			part = "summary_{}".format(summary_part)
+			if part in input:
+				summary = summary + input[part]
+				summary_part = summary_part + 1
+			else:
+				break
+		retval["summary"] = summary
+
+		return retval
 
 def clean_chapter(input):
-	return input
+	if input is not None and isinstance(input, dict):
+		retval = {}
+		retval["id"] = input["chapter_id"]
+		retval["name"] = input["name"]
+		retval["title"] = input["title"]
+		retval["release_date"] = int(input["release_date"])
+		retval["sequence_number"] = int(input["sequence_number"])
+		retval["series_id"] = input["series_id"]
+		retval["time_created"] = int(input["time_created"])
+		return retval
+
 
 def clean_page(input):
-	return input
+	if input is not None and isinstance(input, dict):
+		retval = {}
+		retval["id"] = input["page_id"]
+		retval["image_url"] = input["image_url"]
+		retval["chapter_id"] = input["chapter_id"]
+		retval["sequence_number"] = int(input["sequence_number"])
+		return retval
 
 
 def get_series_list(limit, offset, updated_since):
-	redis_key = """
-		get_series_list_lim_{}_offset_{}_since_{}
-	""".format(limit, offset, updated_since)
+	redis_key = "get_series_list_lim_{}_offset_{}_since_{}".format(limit, offset, updated_since)
 
 	retval = redis.get(redis_key)
 
@@ -60,7 +97,11 @@ def get_series_list(limit, offset, updated_since):
 		retval = []
 		if rs:
 			for r in rs:
-				retval.append(clean_series(r))
+				series = clean_series(r)
+
+				# Persist it to redis incase we want to get a single series
+				redis.set(series["name"], series)
+				retval.append(series)
 
 		redis.set(redis_key, retval)
 
@@ -81,9 +122,7 @@ def get_series(series_name):
 		return series
 
 def get_chapter_list(series_name, limit, offset, updated_since):
-	redis_key = """
-		get_chapter_list_{}_lim_{}_offset_{}_since_{}
-	""".format(series_name, limit, offset, updated_since)
+	redis_key = "get_chapter_list_{}_lim_{}_offset_{}_since_{}".format(series_name, limit, offset, updated_since)
 
 	retval = redis.get(redis_key)
 
@@ -93,7 +132,7 @@ def get_chapter_list(series_name, limit, offset, updated_since):
 			where = """
 				sequence_number_sort IS NOT NULL 
 				INTERSECTION series_id = '{}'
-			""".format(series["series_id"])
+			""".format(series["id"])
 			order_by = "sequence_number_sort desc"
 
 			query = """
@@ -116,13 +155,46 @@ def get_chapter_list(series_name, limit, offset, updated_since):
 			retval = []
 			if rs:
 				for r in rs:
-					retval.append(clean_chapter(r))
+					chapter = clean_chapter(r)
+					if chapter:
+						key = "series_{}_chapter_{}".format(series["url_segment"], chapter["sequence_number"])
+						redis.set(key, chapter)
+						retval.append(chapter)
 			redis.set(redis_key, retval)
 
 	return retval
 
+def get_chapter_by_id(chapter_id):
+	redis_key = "pages_in_chapter_{}".format(chapter_id)
+	pages = redis.get(redis_key)
+	if pages is None:
+		rs = pages_dom.select("""
+			SELECT * FROM `pages` 
+			WHERE 
+				chapter_id = '{}' 
+					INTERSECTION 
+				sequence_number_sort IS NOT NULL
+			ORDER BY sequence_number_sort ASC
+		""".format(chapter_id))
 
+		pages = []
+		if rs:
+			for r in rs:
+				page = clean_page(r)
+				pages.append(page)
 
+		redis.set(redis_key, pages)
+
+	return pages
+
+def get_chapter(series_name, chapter_number):
+	redis_key = "series_{}_chapter_{}".format(series_name, chapter_number)
+	chapter = redis.get(redis_key)
+	if chapter is None:
+		pass
+
+	if chapter is not None:
+		return get_chapter_by_id(chapter["id"])
 
 
 

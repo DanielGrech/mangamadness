@@ -67,11 +67,17 @@ class ChaptersBySeriesRequest(Resource):
 
 class ChapterBySeriesAndNumberRequest(Resource):
 	def get(self, series_name, chapter_number):
-		return {"result" : "Hello, " + str(series_name) + " chapter " + str(chapter_number)}
+		return {
+			"series" : series_name,
+			"chapter" : chapter_number,
+			"result" : api.get_chapter(series_name, chapter_number)
+		}
 
 class ChapterRequest(Resource):
 	def get(self, chapter_id):
-		return {"result" : "Hello, " + str(chapter_id)}
+		return {
+			"result" : api.get_chapter_by_id(chapter_id)
+		}
 
 def main():
 	app = Flask(__name__)
