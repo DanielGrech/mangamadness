@@ -49,7 +49,19 @@ class SeriesRequest(Resource):
 
 class SearchSeriesRequest(Resource):
 	def get(self, query):
-		return {"result" : "Hello, " + str(query)}
+		limit, offset, updated_since = extract(parser.parse_args())
+
+		response = {
+			"limit" : limit,
+			"offset" : offset,
+			"updated_since" : updated_since,
+			"query" : query
+		}
+
+		print "Searching for {}".format(query)
+		result = api.search_series(query, limit, offset, updated_since)
+		response["result"] = [] if result is None else result
+		return response
 
 class ChaptersBySeriesRequest(Resource):
 	def get(self, series_name):

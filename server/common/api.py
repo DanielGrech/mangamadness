@@ -29,8 +29,12 @@ def clean_series(input):
 		retval["author"] = input["author"]
 		retval["cover_image_url"] = input["cover_image_url"]
 		retval["genres"] = input["genres"]
-		retval["year_of_release"] = int(input["year_of_release"])
 		retval["time_created"] = int(input["time_created"])
+
+		year_of_release = input["year_of_release"]
+		if year_of_release is not None and year_of_release != "None":
+			retval["year_of_release"] = int(year_of_release)
+		
 
 		summary = ""
 		summary_part = 0
@@ -66,6 +70,44 @@ def clean_page(input):
 		retval["chapter_id"] = input["chapter_id"]
 		retval["sequence_number"] = int(input["sequence_number"])
 		return retval
+
+def search_series(query, limit, offset, updated_since):
+	redis_key = "search_series_query_{}_list_lim_{}_offset_{}_since_{}".format(query, limit, offset, updated_since)
+
+	retval = redis.get(redis_key)
+
+	if retval is None:
+		where = "url_segment like '{}%'".format(query)
+		order_by = "url_segment"
+
+		query = """
+			SELECT * FROM `series` WHERE {} ORDER BY {} LIMIT {}
+		""".format(where, order_by, limit)
+
+		rs = None
+		if offset == 0:
+			rs = series_dom.select(query, max_items=limit)
+		else:
+			rs = series_dom.select("""
+				SELECT count(*) FROM `series` WHERE {} ORDER BY {} LIMIT {}
+			""".format(where, order_by, offset), max_items=1)
+
+			if rs:
+				for r in rs:
+					pass
+				rs = series_dom.select(query, max_items=limit, next_token=rs.next_token)
+
+		retval = []
+		if rs:
+			for r in rs:
+				series = clean_series(r)
+				# Persist it to redis incase we want to get a single series
+				redis.set(series["name"], series)
+				retval.append(series)
+
+		redis.set(redis_key, retval, ex=60*60*24*7)
+
+	return retval		
 
 
 def get_series_list(limit, offset, updated_since):
