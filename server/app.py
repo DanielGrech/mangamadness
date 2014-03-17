@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask.ext.restful import Api, Resource, reqparse
+from flask.ext.compress import Compress
 from common import api
 
 DEFAULT_LIMIT = 100
@@ -58,7 +59,6 @@ class SearchSeriesRequest(Resource):
 			"query" : query
 		}
 
-		print "Searching for {}".format(query)
 		result = api.search_series(query, limit, offset, updated_since)
 		response["result"] = [] if result is None else result
 		return response
@@ -93,6 +93,7 @@ class ChapterRequest(Resource):
 
 def main():
 	app = Flask(__name__)
+	Compress(app)
 	api = Api(app)
 	
 	api.add_resource(SeriesListRequest, '/series')
