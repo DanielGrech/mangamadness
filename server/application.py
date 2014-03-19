@@ -1,6 +1,8 @@
-from flask import Flask, jsonify
+from flask import Flask, got_request_exception
 from flask.ext.restful import Api, Resource, reqparse
 from flask.ext.compress import Compress
+import logging
+from logging.handlers import RotatingFileHandler
 from common import api
 
 DEFAULT_LIMIT = 100
@@ -10,6 +12,8 @@ parser = reqparse.RequestParser()
 parser.add_argument('limit', type=int, help="limit cannot be converted")
 parser.add_argument('offset', type=int, help="offset cannot be converted")
 parser.add_argument('updated_since', type=int, help="updated_since cannot be converted")
+
+application = Flask(__name__)
 
 def extract(args):
 	limit = args["limit"]
@@ -91,11 +95,19 @@ class ChapterRequest(Resource):
 			"result" : api.get_chapter_by_id(chapter_id)
 		}
 
-def main():
-	app = Flask(__name__)
-	Compress(app)
-	api = Api(app)
+def log_exception(sender, exception, **extra):
+    application.logger.exception(exception)
+
+def setup_logger():
+	file_handler = RotatingFileHandler('mm_api.log', maxBytes=1024 * 1024 * 100, backupCount=1)
+	file_handler.setFormatter(logging.Formatter("[%(asctime)s]\t[%(name)s]\t[%(levelname)s] - %(message)s"))
+	application.logger.addHandler(file_handler)
+	got_request_exception.connect(log_exception, application)
+
+def setup_routes():	
+	Compress(application)
 	
+	api = Api(application, catch_all_404s=True)
 	api.add_resource(SeriesListRequest, '/series')
 	api.add_resource(SearchSeriesRequest, '/series/search/<string:query>')	
 	api.add_resource(SeriesRequest, '/series/<string:series_name>')
@@ -103,7 +115,7 @@ def main():
 	api.add_resource(ChapterBySeriesAndNumberRequest, '/series/<string:series_name>/chapters/<int:chapter_number>')
 	api.add_resource(ChapterRequest, '/chapters/<string:chapter_id>')
 
-	app.run(debug=True)
-
 if __name__ == '__main__':
-	main()
+	setup_routes()
+	setup_logger()
+	application.run(debug=True)

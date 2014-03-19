@@ -41,7 +41,15 @@ def clean_series(input):
 		while True:
 			part = "summary_{}".format(summary_part)
 			if part in input:
-				summary = summary + input[part]
+				to_add = None
+				if isinstance(input[part], unicode):
+					to_add = input[part].encode('ascii', 'ignore')
+				elif isinstance(input[part], str):
+					to_add = input[part].decode('utf-8', 'ignore').encode('ascii', 'ignore')
+				else:
+					to_add = input[part]
+
+				summary += to_add
 				summary_part = summary_part + 1
 			else:
 				break
